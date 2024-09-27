@@ -46,9 +46,9 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
-import { getListEstaticasBB012 } from '@/services/estaticas/bb012_Estaticas';
-import type { Csicp_bb012 } from '@/types/crm/combos/combo_ContasTypes';
-import type { Csicp_bb012_MRel, EstaticasBB012 } from '@/types/estaticas/BB/bb012_Estaticas';
+import { getListEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
+import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
+import type { Csicp_bb012_MRel, EstaticasBB012 } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
