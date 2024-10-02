@@ -11,6 +11,9 @@ export default defineConfig({
             styles: { configFile: 'src/scss/variables.scss' }
         })
     ],
+    server: {
+        port: 8081
+    },
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
