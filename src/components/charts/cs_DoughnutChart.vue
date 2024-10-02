@@ -13,16 +13,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, Ref } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { getPrimary, getLightPrimary, getSecondary } from '@/utils/UpdateColors';
-import { Chart, DoughnutController, ArcElement, Tooltip, Legend, Title, ChartOptions, ChartData } from 'chart.js';
+import { ref, onMounted, computed, watch, type Ref } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { getPrimary, getLightPrimary, getSecondary } from '../../utils/UpdateColors';
+import { Chart, DoughnutController, ArcElement, Tooltip, Legend, Title, type ChartOptions, type ChartData } from 'chart.js';
 Chart.register(DoughnutController, ArcElement, Tooltip, Legend, Title);
 
 // Import das APIs
-import { GetUsuarioCompleto } from '@/services/gestao/charts/sy001_usuarios';
-import { GetEstabCompleto } from '@/services/gestao/charts/bb0001_estabelecimentos';
-import { GetGrupoCompleto } from '@/services/gestao/charts/sy002_grupos';
+import { GetUsuarioCompleto } from '../../services/gestao/sy001_usuarios';
+import { GetEstabCompleto } from '../../services/gestao/bb0001_estabelecimentos';
+import { GetGrupoCompleto } from '../../services/gestao/sy002_grupos';
 
 // Referência ao canvas do gráfico
 const doughnutChart = ref<HTMLCanvasElement | null>(null);

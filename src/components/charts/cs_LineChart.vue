@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, Ref, computed } from 'vue';
+import { ref, onMounted, watch, type Ref, computed } from 'vue';
 import {
     Chart,
     LineController,
@@ -37,7 +37,7 @@ import {
     Tooltip,
     Legend,
     PointElement,
-    ChartOptions,
+    type ChartOptions,
     Filler
 } from 'chart.js';
 import { useAuthStore } from '@/stores/auth';
@@ -45,12 +45,12 @@ import { getPrimary, getLightPrimary } from '@/utils/UpdateColors';
 Chart.register(LineController, LineElement, CategoryScale, LinearScale, Filler, Title, Tooltip, Legend, PointElement);
 
 // Import de API's
-import { GetCentroDeCustoCompleto } from '@/services/basico/bb005_centrodecusto';
-import { GetAgenteCobrador } from '@/services/basico/bb006_agentecobrador';
-import { GetResponsavelCompleto } from '@/services/basico/bb007_responsavel';
-import { GetFormasDePagamentoCompleto } from '@/services/basico/bb026_formadepagamento';
-import { GetCondicaoDePagamentoCompleto } from '@/services/basico/bb008_condicaodepagamento';
-import { GetNaturezaCompleto } from '@/services/basico/bb025_natureza';
+import { GetCentroDeCustoCompleto } from '../../services/basico/bb005_centrodecusto';
+import { GetAgenteCobradorCompleto } from '../../services/basico/bb006_agentecobrador';
+import { GetResponsavelCompleto } from '../../services/basico/bb007_responsavel';
+import { GetFormasDePagamentoCompleto } from '../../services/basico/bb026_formadepagamento';
+import { GetCondicaoDePagamentoCompleto } from '../../services/basico/bb008_condicaodepagamento';
+import { GetNaturezaCompleto } from '../../services/basico/bb025_natureza';
 
 // Declaração de variáveis
 const lineChart = ref<HTMLCanvasElement | null>(null);
@@ -244,7 +244,7 @@ onMounted(() => {
 
     // Chamadas das funções de API usando o fetchData genérico
     fetchData(() => GetCentroDeCustoCompleto(tenant, true, true, '', 1, 999), countCentroDeCusto);
-    fetchData(() => GetAgenteCobrador(tenant, true, true, '', 1, 999), countAgenteCobrador);
+    fetchData(() => GetAgenteCobradorCompleto(tenant, true, true, '', 1, 999), countAgenteCobrador);
     fetchData(() => GetResponsavelCompleto(tenant, true, true, '', 1, 999), countResponsavel);
     fetchData(() => GetFormasDePagamentoCompleto(tenant, true, true, '', 1, 999), countFormaDePagamento);
     fetchData(() => GetCondicaoDePagamentoCompleto(tenant, true, true, '', 1, 999), countCondicaoDePagamento);

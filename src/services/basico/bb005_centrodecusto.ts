@@ -1,7 +1,7 @@
 import { URLBase } from '../configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { CentroDeCustoCompleto, Csicp_bb005_Completo, Csicp_bb005 } from '@/types/basico/bb005_centrodecusto';
+import type { CentroDeCustoCompleto, Csicp_bb005_Completo, Csicp_bb005 } from '@/types/basico/centro_de_custo/bb005_centrodecusto';
 import type { ApiResponse } from '@/types/crm/contas';
 
 function GetCentroDeCustoCompleto(

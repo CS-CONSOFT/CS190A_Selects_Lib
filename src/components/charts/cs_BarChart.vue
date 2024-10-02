@@ -23,9 +23,9 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, watch, type Ref, computed } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '../../stores/auth';
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, type ChartOptions } from 'chart.js';
-import { getPrimary, getLightPrimary } from '@/utils/UpdateColors';
+import { getPrimary, getLightPrimary } from '../../utils/UpdateColors';
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 // Import de API's

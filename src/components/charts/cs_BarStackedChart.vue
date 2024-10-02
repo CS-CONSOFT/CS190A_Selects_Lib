@@ -26,19 +26,20 @@
     </v-card>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch, Ref, computed } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
-import { getPrimary, getLightPrimary } from '@/utils/UpdateColors';
+import { ref, onMounted, watch, type Ref, computed } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend, type ChartOptions } from 'chart.js';
+import { getPrimary, getLightPrimary } from '../../utils/UpdateColors';
 // Registro dos componentes necessários do Chart.js
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+
 // Import de API's
-import { GetCentroDeCustoCompleto } from '@/services/basico/bb005_centrodecusto';
-import { GetAgenteCobrador } from '@/services/basico/bb006_agentecobrador';
-import { GetResponsavelCompleto } from '@/services/basico/bb007_responsavel';
-import { GetFormasDePagamentoCompleto } from '@/services/basico/bb026_formadepagamento';
-import { GetCondicaoDePagamentoCompleto } from '@/services/basico/bb008_condicaodepagamento';
-import { GetNaturezaCompleto } from '@/services/basico/bb025_natureza';
+import { GetCentroDeCustoCompleto } from '../../services/basico/bb005_centrodecusto';
+import { GetAgenteCobradorCompleto } from '../../services/basico/bb006_agentecobrador';
+import { GetResponsavelCompleto } from '../../services/basico/bb007_responsavel';
+import { GetFormasDePagamentoCompleto } from '../../services/basico/bb026_formadepagamento';
+import { GetCondicaoDePagamentoCompleto } from '../../services/basico/bb008_condicaodepagamento';
+import { GetNaturezaCompleto } from '../../services/basico/bb025_natureza';
 
 // Declaração de variáveis
 const barChart = ref<HTMLCanvasElement | null>(null);
@@ -203,14 +204,14 @@ onMounted(() => {
 
     // Chamadas das funções de API usando o fetchData genérico para trazer os ativos
     fetchData(() => GetCentroDeCustoCompleto(tenant, true, true, '', 1, 999), countCentroDeCusto);
-    fetchData(() => GetAgenteCobrador(tenant, true, true, '', 1, 999), countAgenteCobrador);
+    fetchData(() => GetAgenteCobradorCompleto(tenant, true, true, '', 1, 999), countAgenteCobrador);
     fetchData(() => GetResponsavelCompleto(tenant, true, true, '', 1, 999), countResponsavel);
     fetchData(() => GetFormasDePagamentoCompleto(tenant, true, true, '', 1, 999), countFormaDePagamento);
     fetchData(() => GetCondicaoDePagamentoCompleto(tenant, true, true, '', 1, 999), countCondicaoDePagamento);
     fetchData(() => GetNaturezaCompleto(tenant, true, true, '', 1, 999), countNatureza);
     // Chamadas das funções de API usando o fetchData genérico para trazer os inativos
     fetchData(() => GetCentroDeCustoCompleto(tenant, false, true, '', 1, 999), countCentroDeCustoInativos);
-    fetchData(() => GetAgenteCobrador(tenant, false, true, '', 1, 999), countAgenteCobradorInativos);
+    fetchData(() => GetAgenteCobradorCompleto(tenant, false, true, '', 1, 999), countAgenteCobradorInativos);
     fetchData(() => GetResponsavelCompleto(tenant, false, true, '', 1, 999), countResponsavelInativos);
     fetchData(() => GetFormasDePagamentoCompleto(tenant, false, true, '', 1, 999), countFormaDePagamentoInativos);
     fetchData(() => GetCondicaoDePagamentoCompleto(tenant, false, true, '', 1, 999), countCondicaoDePagamentoInativos);

@@ -1,7 +1,7 @@
 import { URLBase } from '../configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { AgenteCobradorCompleto, Lista_bb006_Completo, Csicp_bb006 } from '@/types/basico/bb006_agentecobrador';
+import type { AgenteCobradorCompleto, Lista_bb006_Completo, Csicp_bb006 } from '@/types/basico/agente_cobrador/bb006_agentecobrador';
 import type { ApiResponse } from '@/types/crm/contas';
 
 function GetAgenteCobradorCompleto(
