@@ -18,10 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineExpose, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { getListUsuariosCombo } from '@/services/usuarios/combos/sy001_comboUsuarios';
-import type { Usuarios_List } from '@/types/basico/usuario/combos/Combo_UsuarioTypes';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { getListUsuariosCombo } from '../../services/usuarios/combos/sy001_comboUsuarios';
+import type { Usuarios_List } from '../../types/basico/usuario/combos/Combo_UsuarioTypes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

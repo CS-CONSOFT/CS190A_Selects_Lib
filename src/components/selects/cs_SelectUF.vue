@@ -18,10 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, defineProps, defineEmits, onMounted } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import getListaUFCombo from '@/services/enderecamento/combos/aa027_comboUF';
-import type { Csicp_aa027 } from '@/types/enderecamento/combos/Combo_UnFederativaTypes';
+import { ref, computed, watch, onMounted } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import getListaUFCombo from '../../services/enderecamento/combos/aa027_comboUF';
+import type { Csicp_aa027 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
 
 const props = defineProps<{
     selectedPais: string | null;

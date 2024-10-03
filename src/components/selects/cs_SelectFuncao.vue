@@ -16,10 +16,10 @@
     </v-select>
 </template>
 <script setup lang="ts">
-import { ref, computed, defineEmits, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { GetListFuncoesCombo } from '@/services/basico/combos/bb031_comboFuncoes';
-import type { Lista_bb031 } from '@/types/basico/funcoes/bb031_funcoes';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { GetListFuncoesCombo } from '../../services/basico/combos/bb031_comboFuncoes';
+import type { Lista_bb031 } from '../../types/basico/funcoes/bb031_funcoes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

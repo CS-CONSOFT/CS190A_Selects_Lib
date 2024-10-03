@@ -16,10 +16,10 @@
     </v-select>
 </template>
 <script setup lang="ts">
-import { ref, computed, defineEmits, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { getListResponsaveisCombo } from '@/services/basico/combos/bb007_comboResponsaveis';
-import type { Lista_bb007 } from '@/types/basico/responsavel/combos/Combo_ResponsaveisTypes';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { getListResponsaveisCombo } from '../../services/basico/combos/bb007_comboResponsaveis';
+import type { Lista_bb007 } from '../../types/basico/responsavel/combos/Combo_ResponsaveisTypes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

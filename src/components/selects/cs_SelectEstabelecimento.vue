@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth';
-import { IEstabelecimentoListItem } from '@/types/login/Login';
-import { StorageTypesKey } from '@/types/StorageTypes';
 import { onMounted, ref, watch } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import type { IEstabelecimentoListItem } from '../../types/login/Login';
+import { StorageTypesKey } from '../../types/StorageTypes';
 const selectedEstab = ref('');
 const currentUser = useAuthStore().user;
 

@@ -36,9 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, onMounted, watch } from 'vue';
-import { getListEstaticasSpedCFOP } from '@/services/estaticas/sped_cfop';
-import type { SpedInCFOP } from '@/types/basico/estaticas/SPED/sped_in_cfop_estaticas';
+import { ref, computed, onMounted, watch } from 'vue';
+import { getListEstaticasSpedCFOP } from '../../services/estaticas/sped_cfop';
+import type { SpedInCFOP } from '../../types/basico/estaticas/SPED/sped_in_cfop_estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

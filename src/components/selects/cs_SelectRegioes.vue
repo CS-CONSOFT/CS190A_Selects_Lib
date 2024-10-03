@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { getListaRegioesCombo } from '@/services/enderecamento/combos/aa026_comboRegioes';
-import type { Csicp_aa026 } from '@/types/enderecamento/combos/Combo_UnFederativaTypes';
+import { useAuthStore } from '../../stores/auth';
+import { getListaRegioesCombo } from '../../services/enderecamento/combos/aa026_comboRegioes';
+import type { Csicp_aa026 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

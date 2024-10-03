@@ -17,9 +17,9 @@
     </v-select>
 </template>
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineExpose, onMounted, watch } from 'vue';
-import { getListEstaticasFF } from '@/services/estaticas/estaticas_ff';
-import type { Csicp_ff003_TpEsp_List } from '@/types/basico/estaticas/FF/ff_estaticas';
+import { ref, computed, onMounted, watch } from 'vue';
+import { getListEstaticasFF } from '../../services/estaticas/estaticas_ff';
+import type { Csicp_ff003_TpEsp_List } from '../../types/basico/estaticas/FF/ff_estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

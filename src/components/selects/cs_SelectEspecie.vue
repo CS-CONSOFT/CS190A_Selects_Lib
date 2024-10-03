@@ -18,9 +18,9 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { GetListEspecieCombo } from '@/services/financeiro/combos/ff003_comboEspecie';
-import type { Csicp_ff003_List } from '@/types/financeiro/especie/ff003_especie';
+import { useAuthStore } from '../../stores/auth';
+import { GetListEspecieCombo } from '../../services/financeiro/combos/ff003_comboEspecie';
+import type { Csicp_ff003_List } from '../../types/financeiro/especie/ff003_especie';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

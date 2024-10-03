@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '@/services/estaticas/estaticas_bb';
-import type { Csicp_bb019_Tipo } from '@/types/basico/estaticas/BB/bb_estaticas';
+import { ref, computed, onMounted, watch } from 'vue';
+import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import type { Csicp_bb019_Tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

@@ -23,9 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits, defineExpose, onMounted, watch } from 'vue';
-import { getListEstaticasSpedICMS } from '@/services/estaticas/sped_icms';
-import type { SpedInICMS } from '@/types/basico/estaticas/SPED/sped_in_icms_estaticas';
+import { ref, computed, onMounted, watch } from 'vue';
+import { getListEstaticasSpedICMS } from '../../services/estaticas/sped_icms';
+import type { SpedInICMS } from '../../types/basico/estaticas/SPED/sped_in_icms_estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

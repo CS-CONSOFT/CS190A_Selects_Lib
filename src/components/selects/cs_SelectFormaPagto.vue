@@ -16,10 +16,10 @@
     </v-select>
 </template>
 <script setup lang="ts">
-import { ref, computed, defineEmits, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { getListFormaPagtoCombo } from '@/services/basico/combos/bb026_comboFormaPagto';
-import type { Csicp_bb026 } from '@/types/basico/forma_de_pagamento/combos/Combo_FormaPagto';
+import { ref, computed, onMounted, watch } from 'vue';
+import { useAuthStore } from '../../stores/auth';
+import { getListFormaPagtoCombo } from '../../services/basico/combos/bb026_comboFormaPagto';
+import type { Csicp_bb026 } from '../../types/basico/forma_de_pagamento/combos/Combo_FormaPagto';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
