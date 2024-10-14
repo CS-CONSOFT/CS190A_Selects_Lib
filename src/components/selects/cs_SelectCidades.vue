@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListaCidadesCombo } from '../../services/enderecamento/combos/aa028_comboCidades';
 import type { Csicp_aa028 } from '../../types/enderecamento/combos/Combo_CidadeTypes';
 
@@ -29,12 +29,12 @@ const props = defineProps<{
     Prm_isObrigatorio?: boolean;
 }>();
 
+const user = getUserFromLocalStorage();
+
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
 }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
 const cidades = ref<Csicp_aa028[]>([]);
 const internalSelectedCidade = ref<string | null>(props.modelValue);
 
@@ -49,7 +49,7 @@ const formattedCidades = computed(() => {
 
 const fetchCidades = async (ufId: string) => {
     try {
-        const response = await getListaCidadesCombo(tenant, ufId);
+        const response = await getListaCidadesCombo(user?.TenantId, ufId);
         if (response.status === 200) {
             cidades.value = response.data.Lista_csicp_aa028.map((item: { csicp_aa028: any }) => item.csicp_aa028);
             if (props.modelValue) {

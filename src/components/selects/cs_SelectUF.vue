@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import getListaUFCombo from '../../services/enderecamento/combos/aa027_comboUF';
 import type { Csicp_aa027 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
 
@@ -30,12 +30,12 @@ const props = defineProps<{
     Prm_isObrigatorio?: boolean;
 }>();
 
+const user = getUserFromLocalStorage();
+
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
 }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
 const unidadesFederativas = ref<Csicp_aa027[]>([]);
 const internalSelectedUF = ref<string | null>(props.modelValue);
 
@@ -51,7 +51,7 @@ const formattedUnidadesFederativas = computed(() => {
 // Função para buscar as unidades federativas baseado no ID do país
 const fetchUnidadesFederativas = async (paisId: string) => {
     try {
-        const response = await getListaUFCombo(tenant, paisId);
+        const response = await getListaUFCombo(user?.TenantId, paisId);
         if (response.status === 200) {
             unidadesFederativas.value = response.data.Lista_csicp_aa027.map((item: { csicp_aa027: any }) => item.csicp_aa027);
             if (props.modelValue) {

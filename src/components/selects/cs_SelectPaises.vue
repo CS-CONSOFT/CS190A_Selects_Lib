@@ -18,9 +18,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListaPaisesCombo } from '../../services/enderecamento/combos/aa025_comboPaises';
 import type { Csicp_aa025 } from '../../types/enderecamento/combos/Combo_PaisesTypes';
+import type { User } from '../../types/login/Login';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -28,8 +29,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+
 const paises = ref<Csicp_aa025[]>([]);
 const internalSelectedPais = ref<string | null>(null);
 
@@ -44,7 +45,7 @@ const formattedPaises = computed(() => {
 
 const fetchPaises = async () => {
     try {
-        const response = await getListaPaisesCombo(tenant);
+        const response = await getListaPaisesCombo(user?.TenantId);
         if (response.status === 200) {
             paises.value = response.data.csicp_aa025;
             if (internalSelectedPais.value) {
