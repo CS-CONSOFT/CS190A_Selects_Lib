@@ -4,6 +4,7 @@
     "compilerOptions": {
         "preserveValueImports": false,
         "verbatimModuleSyntax": true,
+        "importsNotUsedAsValues": "remove",
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
