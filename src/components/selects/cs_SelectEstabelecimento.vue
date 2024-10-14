@@ -17,11 +17,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage, setUserToSessionStorage } from '../../utils/getUserStorage';
 import type { IEstabelecimentoListItem } from '../../types/login/Login';
 import { StorageTypesKey } from '../../types/StorageTypes';
 const selectedEstab = ref('');
-const currentUser = useAuthStore().user;
+
+const user = getUserFromLocalStorage();
 
 function getListEstabelecimento() {
     const userEstabs = JSON.parse(localStorage.getItem(StorageTypesKey.USER_ESTABS) || '') as IEstabelecimentoListItem[];
@@ -33,17 +34,16 @@ function getListEstabelecimento() {
 }
 
 watch(selectedEstab, (currentEstabIdSelected) => {
-    if (currentEstabIdSelected !== currentUser?.EstabelecimentoId) {
-        currentUser!.EstabelecimentoId = currentEstabIdSelected;
+    if (currentEstabIdSelected !== user?.EstabelecimentoId) {
+        user!.EstabelecimentoId = currentEstabIdSelected;
         const estabName = getListEstabelecimento().find((item) => item.value === currentEstabIdSelected)?.title;
-        currentUser!.NomeEstabelecimento = estabName!;
+        user!.NomeEstabelecimento = estabName!;
 
-        const authStore = useAuthStore();
-        authStore.setUser(currentUser!);
+        setUserToSessionStorage(user!);
     }
 });
 
 onMounted(() => {
-    selectedEstab.value = currentUser?.EstabelecimentoId || '';
+    selectedEstab.value = user?.EstabelecimentoId || '';
 });
 </script>

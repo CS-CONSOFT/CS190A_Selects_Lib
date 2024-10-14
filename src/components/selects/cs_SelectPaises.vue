@@ -21,7 +21,6 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListaPaisesCombo } from '../../services/enderecamento/combos/aa025_comboPaises';
 import type { Csicp_aa025 } from '../../types/enderecamento/combos/Combo_PaisesTypes';
-import type { User } from '../../types/login/Login';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

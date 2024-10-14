@@ -14,3 +14,12 @@ export function getUserFromLocalStorage(): User | null {
 
     return null;
 }
+
+export function setUserToSessionStorage(user: User): void {
+    try {
+        const userString = JSON.stringify(user);
+        sessionStorage.setItem('user', userString);
+    } catch (e) {
+        console.error('Erro ao salvar o usuário no sessionStorage', e);
+    }
+}
