@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useCurrencyInput, CurrencyDisplay } from 'vue-currency-input';
 
 interface Props {
@@ -31,11 +31,17 @@ const { inputRef, setValue } = useCurrencyInput({
     hideCurrencySymbolOnFocus: false,
     hideGroupingSeparatorOnFocus: false,
     hideNegligibleDecimalDigitsOnFocus: false,
-    autoDecimalDigits: true,
+    autoDecimalDigits: false,
     useGrouping: true,
     accountingSign: false,
     precision: props.Prm_Precision ?? 2,
     valueRange: { min: 0 }
+});
+
+onMounted(() => {
+    if (modelo.value !== null) {
+        setValue(modelo.value);
+    }
 });
 
 watch(modelo, (value) => {
