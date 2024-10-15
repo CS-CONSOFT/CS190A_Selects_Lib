@@ -30,12 +30,11 @@ const props = defineProps<{
     Prm_isObrigatorio?: boolean;
 }>();
 
-const user = getUserFromLocalStorage();
-
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
 }>();
 
+const user = getUserFromLocalStorage();
 const unidadesFederativas = ref<Csicp_aa027[]>([]);
 const internalSelectedUF = ref<string | null>(props.modelValue);
 

@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListCondicaoPagtoCombo } from '../../services/basico/combos/bb008_comboCondicaoPagto';
 import type { Lista_bb008 } from '../../types/basico/condicao_de_pagamento/combos/Combo_CondicaoPagtoTypes';
 
@@ -27,8 +27,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
 const condicoes = ref<Lista_bb008[]>([]);
 const internalSelectedCondicao = ref<string | null>(null);
 
@@ -43,7 +42,7 @@ const formattedCondicoes = computed(() => {
 
 const fetchCondicoesPagto = async () => {
     try {
-        const response = await getListCondicaoPagtoCombo(tenant);
+        const response = await getListCondicaoPagtoCombo(user?.TenantId);
         if (response.status === 200) {
             condicoes.value = response.data.Lista_bb008;
             if (internalSelectedCondicao.value) {
