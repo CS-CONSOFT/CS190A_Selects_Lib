@@ -19,7 +19,6 @@ interface Props {
     Prm_Moeda?: string;
     Prm_ValueMax?: number;
     Prm_Precision?: number;
-    modelValue: number;
 }
 
 const props = defineProps<Props>();
@@ -39,10 +38,9 @@ const { inputRef, setValue } = useCurrencyInput({
     valueRange: { min: 0 }
 });
 
-watch(
-    () => props.modelValue,
-    (value) => {
+watch(modelo, (value) => {
+    if (value !== null) {
         setValue(value);
     }
-);
+});
 </script>
