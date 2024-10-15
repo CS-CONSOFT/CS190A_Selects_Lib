@@ -1,6 +1,6 @@
 {
-    "name": "adminPro",
-    "version": "3.0.0",
+    "name": "cs_components",
+    "version": "1.0.0",
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc --noEmit && vite build",
@@ -37,6 +37,7 @@
         "vue": "3.4.17",
         "vue-chartjs": "^5.3.1",
         "vue-clipboard3": "2.0.0",
+        "vue-currency-input": "^3.1.0",
         "vue-draggable-next": "2.2.1",
         "vue-i18n": "9.9.1",
         "vue-router": "4.2.5",
