@@ -25,13 +25,14 @@ const props = defineProps<Props>();
 
 const modelo = ref<number | null>(null);
 
+// Configuração para o input de moeda
 const { inputRef, setValue } = useCurrencyInput({
     currency: props.Prm_Moeda ?? 'BRL',
     currencyDisplay: 'hidden' as CurrencyDisplay,
     hideCurrencySymbolOnFocus: false,
     hideGroupingSeparatorOnFocus: false,
     hideNegligibleDecimalDigitsOnFocus: false,
-    autoDecimalDigits: false,
+    autoDecimalDigits: true,
     useGrouping: true,
     accountingSign: false,
     precision: props.Prm_Precision ?? 2,
@@ -49,4 +50,12 @@ watch(modelo, (value) => {
         setValue(value);
     }
 });
+
+const handleBlur = () => {
+    if (modelo.value !== null) {
+        setValue(modelo.value);
+    }
+};
+
+inputRef.value?.addEventListener('blur', handleBlur);
 </script>
