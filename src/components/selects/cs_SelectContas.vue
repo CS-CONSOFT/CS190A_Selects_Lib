@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
 import { getListEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
@@ -61,8 +61,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const contas = ref<Csicp_bb012[]>([]);
 const selectedConta = ref<string | null>(null);
 const loading = ref(false);
@@ -73,10 +73,13 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma conta'
 
 const filteredContas = computed(() => {
     if (!search.value) {
-        return contas.value.map((item) => ({
-            title: item.BB012_Nome_Cliente,
-            value: item.ID
-        }));
+        return [
+            { title: '', value: null },
+            ...contas.value.map((item) => ({
+                title: item.BB012_Nome_Cliente,
+                value: item.ID
+            }))
+        ];
     }
 
     const searchText = search.value.toLowerCase();

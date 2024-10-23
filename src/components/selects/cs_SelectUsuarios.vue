@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListUsuariosCombo } from '../../services/usuarios/combos/sy001_comboUsuarios';
 import type { Usuarios_List } from '../../types/basico/usuario/combos/Combo_UsuarioTypes';
 
@@ -33,8 +33,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const usuarios = ref<Usuarios_List[]>([]);
 const internalSelectedUsuario = ref<string | null>(null);
 const errors = ref<string[]>([]);
