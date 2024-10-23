@@ -27,6 +27,10 @@ interface Item {
     Order: number;
 }
 
+//Ex:
+//Tipo = 1: Referente a SIM,NAO
+//Tipo = 2: Referente a ATIVO,INATIVO
+
 const props = defineProps<{
     Tipo: number;
     modelValue: any;
