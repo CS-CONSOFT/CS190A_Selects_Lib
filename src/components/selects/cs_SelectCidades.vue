@@ -41,10 +41,13 @@ const internalSelectedCidade = ref<string | null>(props.modelValue);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma cidade');
 
 const formattedCidades = computed(() => {
-    return cidades.value.map((item) => ({
-        title: item.AA028_Cidade,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: null },
+        ...cidades.value.map((item) => ({
+            title: item.AA028_Cidade,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchCidades = async (ufId: string) => {
