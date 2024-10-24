@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB012 } from '@/services/estaticas/bb012_Estaticas';
+import { getListEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import type { Csicp_bb012j_TpEnd } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
