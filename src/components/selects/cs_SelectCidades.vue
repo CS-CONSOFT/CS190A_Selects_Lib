@@ -72,11 +72,12 @@ const fetchCidades = async (ufId: string) => {
 watch(
     () => props.selectedUF,
     (newUF) => {
+        internalSelectedCidade.value = null;
+
         if (newUF) {
             fetchCidades(newUF);
         } else {
             cidades.value = [];
-            internalSelectedCidade.value = null;
         }
     },
     { immediate: true }
