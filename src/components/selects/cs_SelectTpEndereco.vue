@@ -1,7 +1,7 @@
 <template>
     <v-select
-        v-model="internalSelectedTpEspecie"
-        :items="formattedTpEspecie"
+        v-model="internalSelectedTpEndereco"
+        :items="formattedTpEndereco"
         :rules="props.rules"
         item-value="value"
         item-text="title"
@@ -18,8 +18,8 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasFF } from '../../services/estaticas/estaticas_ff';
-import type { Csicp_ff003_TpEsp_List } from '../../types/basico/estaticas/FF/ff_estaticas';
+import { getListEstaticasBB012 } from '@/services/estaticas/bb012_Estaticas';
+import type { Csicp_bb012j_TpEnd } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -31,16 +31,16 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const tipoEspecie = ref<Csicp_ff003_TpEsp_List[]>([]);
-const internalSelectedTpEspecie = ref<string | null>(null);
+const tipoEndereco = ref<Csicp_bb012j_TpEnd[]>([]);
+const internalSelectedTpEndereco = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
-const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo para a forma de pagamento');
+const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de endereço');
 
-const formattedTpEspecie = computed(() => {
+const formattedTpEndereco = computed(() => {
     return [
         { title: '', value: null },
-        ...tipoEspecie.value.map((item) => ({
+        ...tipoEndereco.value.map((item) => ({
             title: item.Label,
             value: item.Id
         }))
@@ -49,20 +49,20 @@ const formattedTpEspecie = computed(() => {
 
 const fetchTipoEspecie = async () => {
     try {
-        const response = await getListEstaticasFF();
+        const response = await getListEstaticasBB012();
         if (response.status === 200) {
-            tipoEspecie.value = response.data.csicp_ff003_TpEsp_List;
-            if (internalSelectedTpEspecie.value) {
-                const selected = tipoEspecie.value.find((especie) => especie.Id === Number(internalSelectedTpEspecie.value));
+            tipoEndereco.value = response.data.csicp_bb012j_TpEnd;
+            if (internalSelectedTpEndereco.value) {
+                const selected = tipoEndereco.value.find((endereco) => endereco.Id === Number(internalSelectedTpEndereco.value));
                 if (selected) {
-                    internalSelectedTpEspecie.value = selected.Id.toString();
+                    internalSelectedTpEndereco.value = selected.Id.toString();
                 }
             }
         } else {
-            console.error('Erro ao buscar o tipo espécie:', response.statusText);
+            console.error('Erro ao buscar o tipo endereço:', response.statusText);
         }
     } catch (error) {
-        console.error('Erro ao buscar o tipo espécie:', error);
+        console.error('Erro ao buscar o tipo endereço:', error);
     }
 };
 
@@ -70,19 +70,19 @@ onMounted(async () => {
     await fetchTipoEspecie();
 });
 
-watch(internalSelectedTpEspecie, (newVal) => {
+watch(internalSelectedTpEndereco, (newVal) => {
     emit('update:modelValue', newVal);
 });
 
 function emitSelection() {
-    emit('update:modelValue', internalSelectedTpEspecie.value);
+    emit('update:modelValue', internalSelectedTpEndereco.value);
 }
 
 function validate() {
     errors.value = [];
     if (props.rules) {
         for (const rule of props.rules) {
-            const result = rule(internalSelectedTpEspecie.value || '');
+            const result = rule(internalSelectedTpEndereco.value || '');
             if (result !== true) {
                 errors.value.push(result);
             }
