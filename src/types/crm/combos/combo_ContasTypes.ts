@@ -32,8 +32,7 @@ export interface Csicp_bb012 {
     bb012_OriCadastroID: number;
 }
 
-export interface ApiResponseBB012Combo<T> {
-    csicp_bb012: any;
+export interface ApiResponseCombo<T> {
     PageSize: any;
     data: T;
     status: number;
