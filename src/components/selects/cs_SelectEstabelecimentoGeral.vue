@@ -38,7 +38,7 @@ const emit = defineEmits<{
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
 
-const selectedItem = ref<string | null>('');
+const selectedItem = ref<string | null>(props.modelValue);
 const formattedList = ref<{ title: string, value: string }[]>([{ title: '', value: '' }]);
 const loading = ref(false);
 
