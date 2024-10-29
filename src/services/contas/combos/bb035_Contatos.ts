@@ -5,7 +5,7 @@ import type { ComboContatos, ApiResponseCombo } from '../../../types/crm/combos/
 
 function getListContatosCombo(tenant: number | undefined): Promise<AxiosResponse<ApiResponseCombo<ComboContatos>>> {
     return axios.get<ApiResponseCombo<ComboContatos>>(
-        `${URLBase}CSR_BB100_ClienteFor_IS/rest/CS_CRM_OutrasFontes/csicp_bb035_Get_List_Contatos`,
+        `${URLBase}/CSR_BB100_ClienteFor_IS/rest/CS_CRM_OutrasFontes/csicp_bb035_Get_List_Contatos`,
         {
             headers: {
                 tenant_id: tenant,
