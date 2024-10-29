@@ -45,9 +45,7 @@ const loading = ref(false);
 
 // Função para buscar as unidades federativas baseado no ID do país
 const fetch = async () => {
-
-
-
+    loading.value = true
     try {
         const header = {
             tenant_id: tenant,
