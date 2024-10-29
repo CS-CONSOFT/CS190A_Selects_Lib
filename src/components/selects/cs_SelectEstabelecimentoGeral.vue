@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { URLBase } from '@/services/configuracoes_axios';
-import { getUserFromLocalStorage } from '@/submodules/cs_components/src/utils/getUserStorage';
+import { getUserFromLocalStorage } from '@/utils/getUserStorage';
+
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 
