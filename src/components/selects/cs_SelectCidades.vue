@@ -22,6 +22,10 @@ import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListaCidadesCombo } from '../../services/enderecamento/combos/aa028_comboCidades';
 import type { Csicp_aa028 } from '../../types/enderecamento/combos/Combo_CidadeTypes';
 
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: string | null): void;
+}>();
+
 const props = defineProps<{
     selectedUF: string | null;
     modelValue: string | null;
@@ -30,11 +34,7 @@ const props = defineProps<{
 }>();
 
 const user = getUserFromLocalStorage();
-
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
-}>();
-
+const tenant = user?.TenantId;
 const cidades = ref<Csicp_aa028[]>([]);
 const internalSelectedCidade = ref<string | null>(props.modelValue);
 
@@ -52,7 +52,7 @@ const formattedCidades = computed(() => {
 
 const fetchCidades = async (ufId: string) => {
     try {
-        const response = await getListaCidadesCombo(user?.TenantId, ufId);
+        const response = await getListaCidadesCombo(tenant, ufId);
         if (response.status === 200) {
             cidades.value = response.data.Lista_csicp_aa028.map((item: { csicp_aa028: any }) => item.csicp_aa028);
             if (props.modelValue) {

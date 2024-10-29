@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListaRegioesCombo } from '../../services/enderecamento/combos/aa026_comboRegioes';
 import type { Csicp_aa026 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
 
@@ -28,8 +28,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const regioes = ref<Csicp_aa026[]>([]);
 const internalSelectedRegiao = ref<string | null>(null);
 

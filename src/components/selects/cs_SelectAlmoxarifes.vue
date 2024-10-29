@@ -9,7 +9,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListAlmoxarifesCombo } from '../../services/materiais/combos/gg001_comboAlmoxarifes';
 import type { Csicp_gg001 } from '../../types/materiais/combos/Combo_AlmoxarifeTypes';
 
@@ -19,8 +19,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const almoxarifes = ref<Csicp_gg001[]>([]);
 const selectedAlmox = ref<string | null>(null);
 

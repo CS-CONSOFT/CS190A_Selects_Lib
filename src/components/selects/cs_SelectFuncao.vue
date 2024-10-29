@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetListFuncoesCombo } from '../../services/basico/combos/bb031_comboFuncoes';
 import type { Lista_bb031 } from '../../types/basico/funcoes/bb031_funcoes';
 
@@ -27,8 +27,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const funcoes = ref<Lista_bb031[]>([]);
 const internalSelectedFuncao = ref<string | null>(null);
 

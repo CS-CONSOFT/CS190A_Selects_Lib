@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetAdministradoraCompleto } from '../../services/basico/bb019_administradora';
 import type { Lista_bb019_Completo } from '../../types/basico/administradora/bb019_administradora';
 
@@ -27,8 +27,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const administradoras = ref<Lista_bb019_Completo[]>([]);
 const internalSelectedAdministradora = ref<string | null>(null);
 

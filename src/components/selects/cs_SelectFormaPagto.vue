@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListFormaPagtoCombo } from '../../services/basico/combos/bb026_comboFormaPagto';
 import type { Csicp_bb026 } from '../../types/basico/forma_de_pagamento/combos/Combo_FormaPagto';
 
@@ -27,8 +27,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const formas = ref<Csicp_bb026[]>([]);
 const internalSelectedForma = ref<string | null>(null);
 

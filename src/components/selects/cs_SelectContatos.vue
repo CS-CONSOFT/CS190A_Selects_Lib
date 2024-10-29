@@ -21,7 +21,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListContatosCombo } from '../../services/contas/combos/bb035_Contatos';
-import type { Lista_bb035_List } from '../../types/crm/combos/combo_ContatosTypes';
+import type { Csicp_bb035 } from '../../types/crm/combos/combo_ContatosTypes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,7 +35,7 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const contatos = ref<Lista_bb035_List[]>([]);
+const contatos = ref<Csicp_bb035[]>([]);
 const internalSelectedContatos = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
@@ -45,8 +45,8 @@ const formattedContatos = computed(() => {
     return [
         { title: '', value: null },
         ...contatos.value.map((item) => ({
-            title: `${item.csicp_bb035.BB035_PrimeiroNome} ${item.csicp_bb035.BB035_Sobrenome}`,
-            value: item.csicp_bb035.Id
+            title: `${item.BB035_PrimeiroNome} ${item.BB035_Sobrenome}`,
+            value: item.Id
         }))
     ];
 });
@@ -55,11 +55,11 @@ const fetchUsuarios = async () => {
     try {
         const response = await getListContatosCombo(tenant);
         if (response.status === 200) {
-            contatos.value = response.data.Lista_bb035_List;
+            contatos.value = response.data.Lista_bb035_List.map((item: { csicp_bb035: any }) => item.csicp_bb035);
             if (internalSelectedContatos.value) {
-                const selected = contatos.value.find((contato) => contato.csicp_bb035.Id === internalSelectedContatos.value);
+                const selected = contatos.value.find((contato) => contato.Id === internalSelectedContatos.value);
                 if (selected) {
-                    internalSelectedContatos.value = selected.csicp_bb035.Id;
+                    internalSelectedContatos.value = selected.Id;
                 }
             }
         } else {

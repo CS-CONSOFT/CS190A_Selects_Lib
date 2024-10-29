@@ -151,17 +151,3 @@ function validate() {
 
 defineExpose({ validate });
 </script>
-<style scoped>
-.sticky-search-field {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    color: lightgray;
-    padding: 0;
-    margin: 0;
-}
-
-.custom-select-menu {
-    padding: 0 !important;
-}
-</style>

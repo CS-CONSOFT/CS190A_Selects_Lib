@@ -29,7 +29,7 @@ const emit = defineEmits<{
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const user = getUserFromLocalStorage();
-
+const tenant = user?.TenantId;
 const paises = ref<Csicp_aa025[]>([]);
 const internalSelectedPais = ref<string | null>(null);
 
@@ -44,7 +44,7 @@ const formattedPaises = computed(() => {
 
 const fetchPaises = async () => {
     try {
-        const response = await getListaPaisesCombo(user?.TenantId);
+        const response = await getListaPaisesCombo(tenant);
         if (response.status === 200) {
             paises.value = response.data.csicp_aa025;
             if (internalSelectedPais.value) {

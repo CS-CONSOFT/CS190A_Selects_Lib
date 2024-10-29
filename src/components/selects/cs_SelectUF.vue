@@ -35,6 +35,7 @@ const emit = defineEmits<{
 }>();
 
 const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const unidadesFederativas = ref<Csicp_aa027[]>([]);
 const internalSelectedUF = ref<string | null>(props.modelValue);
 
@@ -50,7 +51,7 @@ const formattedUnidadesFederativas = computed(() => {
 // Função para buscar as unidades federativas baseado no ID do país
 const fetchUnidadesFederativas = async (paisId: string) => {
     try {
-        const response = await getListaUFCombo(user?.TenantId, paisId);
+        const response = await getListaUFCombo(tenant, paisId);
         if (response.status === 200) {
             unidadesFederativas.value = response.data.Lista_csicp_aa027.map((item: { csicp_aa027: any }) => item.csicp_aa027);
             if (props.modelValue) {

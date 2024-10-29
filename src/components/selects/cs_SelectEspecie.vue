@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetListEspecieCombo } from '../../services/financeiro/combos/ff003_comboEspecie';
 import type { Csicp_ff003_List } from '../../types/financeiro/especie/ff003_especie';
 
@@ -32,8 +32,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const especie = ref<Csicp_ff003_List[]>([]);
 const internalSelectedEspecie = ref<string | null>(null);
 const errors = ref<string[]>([]);

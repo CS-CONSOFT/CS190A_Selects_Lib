@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { useAuthStore } from '../../stores/auth';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetListCentroDeCustoCombo } from '../../services/basico/combos/bb005_comboCentroDeCusto';
 import type { Lista_bb005 } from '../../types/basico/centro_de_custo/combo/Combo_CentroDeCustoTypes';
 
@@ -27,8 +27,8 @@ const emit = defineEmits<{
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const authStore = useAuthStore();
-const tenant = authStore.user?.TenantId;
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const centros = ref<Lista_bb005[]>([]);
 const internalSelectedCentroDeCusto = ref<string | null>(null);
 

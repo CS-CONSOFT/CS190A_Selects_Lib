@@ -28,6 +28,7 @@ const emit = defineEmits<{
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
 const condicoes = ref<Lista_bb008[]>([]);
 const internalSelectedCondicao = ref<string | null>(null);
 
@@ -42,7 +43,7 @@ const formattedCondicoes = computed(() => {
 
 const fetchCondicoesPagto = async () => {
     try {
-        const response = await getListCondicaoPagtoCombo(user?.TenantId);
+        const response = await getListCondicaoPagtoCombo(tenant);
         if (response.status === 200) {
             condicoes.value = response.data.Lista_bb008;
             if (internalSelectedCondicao.value) {
