@@ -37,7 +37,7 @@ function onInput(event: Event) {
     let value = parseInt(input.value.replace(/\D/g, ''), 10); // Remove tudo que não é número
     if (isNaN(value)) value = 0;
 
-    value = Math.min(Math.max(value, 1), 9999); // Limita o valor entre 1 e 9999 (equivalente a 0,01 a 99,99)
+    value = Math.min(Math.max(value, 1), 10000); // Limita o valor entre 1 e 9999 (equivalente a 0,01 a 99,99)
     localValue.value = value;
     formattedValue.value = formatValue(value);
     emit('update:modelValue', localValue.value / 100);
