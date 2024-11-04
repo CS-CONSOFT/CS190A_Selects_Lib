@@ -1,7 +1,7 @@
-import { URLBase } from '@/services/configuracoes_axios';
+import { URLBase } from '../../services/configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { EstaticasBB } from '@/types/basico/estaticas/BB/bb_estaticas';
+import type { EstaticasBB } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 async function getListEstaticasBB(): Promise<AxiosResponse<EstaticasBB>> {
     try {
