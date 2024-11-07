@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '@/services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_MRel } from '@/types/estaticas/BB/bb012_Estaticas';
+import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
+import type { Csicp_bb012_MRel } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
