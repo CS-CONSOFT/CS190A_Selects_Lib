@@ -53,19 +53,9 @@ const fetchCep = async (cepVal: string) => {
     try {
         const numericCep = Number(cepVal);
         const info = await getCep(numericCep);
-
-        if (info?.erro) {
-            cepError.value = 'CEP inválido';
-        } else {
-            emit('cep-info', info);
-        }
     } catch (error) {
-        if (error?.response?.status === 400) {
-            cepError.value = 'Formato de CEP inválido';
-        } else {
-            console.error('Erro ao buscar informações do CEP:', error);
-            cepError.value = 'Erro ao buscar informações do CEP';
-        }
+        console.error('Erro ao buscar informações do CEP:', error);
+        cepError.value = 'Erro ao buscar informações do CEP';
     }
 };
 

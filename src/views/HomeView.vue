@@ -18,6 +18,9 @@
         <div>
             <cs_SelectTratamento :Prm_isObrigatorio="false" />
         </div>
+        <div>
+            <cs_SelectZona Prm_etiqueta="Venda Rota" :Prm_limpavel="false" :Prm_isObrigatorio="false" />
+        </div>
     </v-container>
 </template>
 
@@ -29,6 +32,7 @@ import cs_InputCelular from '@/components/campos/cs_InputCelular.vue';
 import cs_InputTelefone from '@/components/campos/cs_InputTelefone.vue';
 import cs_InputCep from '@/components/campos/cs_InputCep.vue';
 import cs_SelectTratamento from '@/components/selects/cs_SelectTratamento.vue';
+import cs_SelectZona from '@/components/selects/cs_SelectZona.vue';
 
 // Variável para armazenar o CEP inicial ou o valor alterado
 const cepValue = ref('12345678');

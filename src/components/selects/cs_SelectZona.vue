@@ -56,6 +56,7 @@ const fetchZona = async () => {
         const response = await GetListZonas(tenant);
         if (response.status === 200) {
             zona.value = response.data.Lista_bb010;
+            console.log(response);
             if (internalSelectedZona.value) {
                 const selected = zona.value.find((zona) => zona.ID === internalSelectedZona.value);
                 if (selected) {
