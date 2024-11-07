@@ -5,7 +5,7 @@ import type { CategoriaSimples, ApiResponse } from '../../../types/basico/catego
 
 function getCategoriasCombo(tenant_id: number | undefined): Promise<AxiosResponse<ApiResponse<CategoriaSimples>>> {
     return axios.get<ApiResponse<CategoriaSimples>>(
-        `${URLBase}CSR_BB100_Tabelas_LIB/rest/CS_TabelasTotalizacao/csicp_bb029_Get_List_Categoria`,
+        `${URLBase}/CSR_BB100_Tabelas_LIB/rest/CS_TabelasTotalizacao/csicp_bb029_Get_List_Categoria`,
         {
             headers: {
                 tenant_id: tenant_id,

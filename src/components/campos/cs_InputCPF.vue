@@ -65,6 +65,7 @@ const validationRules = computed(() => {
 
     // Validação para CPF
     rules.push((v: string) => {
+        if (typeof v !== 'string') return 'Valor inválido';
         const cleanValue = v.replace(/\D/g, '');
         if (cleanValue.length === 11) {
             return validarCPF(cleanValue) || 'CPF inválido';

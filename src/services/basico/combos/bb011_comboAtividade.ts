@@ -5,7 +5,7 @@ import type { AtividadeSimples, ApiResponse } from '../../../types/basico/ativid
 
 function getListAtividade(tenant_id: number | undefined): Promise<AxiosResponse<ApiResponse<AtividadeSimples>>> {
     return axios.get<ApiResponse<AtividadeSimples>>(
-        `${URLBase}CSR_BB100_Tabelas_LIB/rest/CS_TabelasTotalizacao/csicp_bb011_Get_List_Atividade`,
+        `${URLBase}/CSR_BB100_Tabelas_LIB/rest/CS_TabelasTotalizacao/csicp_bb011_Get_List_Atividade`,
         {
             headers: {
                 tenant_id: tenant_id,
