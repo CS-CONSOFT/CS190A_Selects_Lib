@@ -35,10 +35,13 @@ const internalSelectedFuncao = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma função');
 
 const formattedFuncao = computed(() => {
-    return funcoes.value.map((item) => ({
-        title: item.csicp_bb031.BB031_Descricao,
-        value: item.csicp_bb031.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...funcoes.value.map((item) => ({
+            title: item.csicp_bb031.BB031_Descricao,
+            value: item.csicp_bb031.ID
+        }))
+    ];
 });
 
 const fetchResponsaveis = async () => {

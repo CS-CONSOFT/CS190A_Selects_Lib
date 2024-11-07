@@ -42,7 +42,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma cidade
 
 const formattedCidades = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: '' },
         ...cidades.value.map((item) => ({
             title: item.AA028_Cidade,
             value: item.Id

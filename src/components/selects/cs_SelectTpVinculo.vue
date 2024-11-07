@@ -17,36 +17,39 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb026_Vin } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const vinFormaPagamento = ref<Csicp_bb026_Vin[]>([]);
-const internalSelectedVinFormaPagamento = ref<string | null>(null);
+const internalSelectedVinFormaPagamento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de vínculo');
 
 const formattedVinFormaPagamento = computed(() => {
-    return vinFormaPagamento.value.map((item) => ({
-        title: item.Label,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: 0 },
+        ...vinFormaPagamento.value.map((item) => ({
+            title: item.Label,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchVinFormaPagamento = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             vinFormaPagamento.value = response.data.csicp_bb026_Vin;
             if (internalSelectedVinFormaPagamento.value) {
-                const selected = vinFormaPagamento.value.find((vinculo) => vinculo.Id === Number(internalSelectedVinFormaPagamento.value));
+                const selected = vinFormaPagamento.value.find((vinculo) => vinculo.Id === internalSelectedVinFormaPagamento.value);
                 if (selected) {
-                    internalSelectedVinFormaPagamento.value = selected.Id.toString();
+                    internalSelectedVinFormaPagamento.value = selected.Id;
                 }
             }
         } else {

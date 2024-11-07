@@ -27,10 +27,13 @@ const selectedAlmox = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um almoxarifado');
 
 const formattedAlmoxarifes = computed(() => {
-    return almoxarifes.value.map((item) => ({
-        title: `${item.GG001_CodigoAlmox} - ${item.GG001_DescAlmox}`,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: '' },
+        ...almoxarifes.value.map((item) => ({
+            title: `${item.GG001_CodigoAlmox} - ${item.GG001_DescAlmox}`,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchAlmoxarifes = async () => {

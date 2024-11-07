@@ -46,7 +46,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
-import { getListEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
+import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
 import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
 import type { Csicp_bb012_MRel, EstaticasBB012 } from '../../types/estaticas/BB/bb012_Estaticas';
 
@@ -74,7 +74,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma conta'
 const filteredContas = computed(() => {
     if (!search.value) {
         return [
-            { title: '', value: null },
+            { title: '', value: '' },
             ...contas.value.map((item) => ({
                 title: item.BB012_Nome_Cliente,
                 value: item.ID
@@ -94,7 +94,7 @@ const filteredContas = computed(() => {
 const fetchContas = async () => {
     loading.value = true;
     try {
-        const response = await getListEstaticasBB012();
+        const response = await GetListEstaticasBB012();
         const estaticasBB012: EstaticasBB012 = response.data;
 
         let labelToSearch = props.modRelacao === 1 ? 'Cliente' : 'Fornecedor';

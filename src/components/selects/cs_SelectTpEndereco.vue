@@ -18,11 +18,11 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
+import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
 import type { Csicp_bb012j_TpEnd } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -32,14 +32,14 @@ const props = defineProps<{
 }>();
 
 const tipoEndereco = ref<Csicp_bb012j_TpEnd[]>([]);
-const internalSelectedTpEndereco = ref<string | null>(null);
+const internalSelectedTpEndereco = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de endereço');
 
 const formattedTpEndereco = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: 0 },
         ...tipoEndereco.value.map((item) => ({
             title: item.Label,
             value: item.Id
@@ -47,15 +47,15 @@ const formattedTpEndereco = computed(() => {
     ];
 });
 
-const fetchTipoEspecie = async () => {
+const fetchTipoEndereco = async () => {
     try {
-        const response = await getListEstaticasBB012();
+        const response = await GetListEstaticasBB012();
         if (response.status === 200) {
             tipoEndereco.value = response.data.csicp_bb012j_TpEnd;
             if (internalSelectedTpEndereco.value) {
-                const selected = tipoEndereco.value.find((endereco) => endereco.Id === Number(internalSelectedTpEndereco.value));
+                const selected = tipoEndereco.value.find((endereco) => endereco.Id === internalSelectedTpEndereco.value);
                 if (selected) {
-                    internalSelectedTpEndereco.value = selected.Id.toString();
+                    internalSelectedTpEndereco.value = selected.Id;
                 }
             }
         } else {
@@ -67,7 +67,7 @@ const fetchTipoEspecie = async () => {
 };
 
 onMounted(async () => {
-    await fetchTipoEspecie();
+    await fetchTipoEndereco();
 });
 
 watch(internalSelectedTpEndereco, (newVal) => {
@@ -80,9 +80,11 @@ function emitSelection() {
 
 function validate() {
     errors.value = [];
+    const valueToValidate = internalSelectedTpEndereco.value?.toString() || '';
+
     if (props.rules) {
         for (const rule of props.rules) {
-            const result = rule(internalSelectedTpEndereco.value || '');
+            const result = rule(valueToValidate);
             if (result !== true) {
                 errors.value.push(result);
             }

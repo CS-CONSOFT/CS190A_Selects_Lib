@@ -35,27 +35,30 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb006_Banco } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const bancos = ref<Csicp_bb006_Banco[]>([]);
-const internalSelectedBanco = ref<string | null>(null);
+const internalSelectedBanco = ref<number | null>(null);
 const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um banco');
 
 const filteredBancos = computed(() => {
     if (!search.value) {
-        return bancos.value.map((item) => ({
-            title: item.NomedoBanco,
-            value: item.Id
-        }));
+        return [
+            { title: '', value: 0 },
+            ...bancos.value.map((item) => ({
+                title: item.NomedoBanco,
+                value: item.Id
+            }))
+        ];
     }
 
     const searchText = search.value.toLowerCase();
@@ -69,13 +72,13 @@ const filteredBancos = computed(() => {
 
 const fetchBancos = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             bancos.value = response.data.csicp_bb006_Banco;
             if (internalSelectedBanco.value) {
-                const selected = bancos.value.find((pais) => pais.Id === Number(internalSelectedBanco.value));
+                const selected = bancos.value.find((pais) => pais.Id === internalSelectedBanco.value);
                 if (selected) {
-                    internalSelectedBanco.value = selected.Id.toString();
+                    internalSelectedBanco.value = selected.Id;
                 }
             }
         } else {

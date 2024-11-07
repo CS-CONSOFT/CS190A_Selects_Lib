@@ -18,11 +18,11 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb008_tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -32,14 +32,14 @@ const props = defineProps<{
 }>();
 
 const tipo = ref<Csicp_bb008_tipo[]>([]);
-const internalSelectedTipoCondicao = ref<string | null>(null);
+const internalSelectedTipoCondicao = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
 const formattedTipo = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: 0 },
         ...tipo.value.map((item) => ({
             title: item.Label,
             value: item.Id
@@ -49,13 +49,13 @@ const formattedTipo = computed(() => {
 
 const fetchTpCondiPagamento = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             tipo.value = response.data.csicp_bb008_tipo;
             if (internalSelectedTipoCondicao.value) {
-                const selected = tipo.value.find((tipo) => tipo.Id === Number(internalSelectedTipoCondicao.value));
+                const selected = tipo.value.find((tipo) => tipo.Id === internalSelectedTipoCondicao.value);
                 if (selected) {
-                    internalSelectedTipoCondicao.value = selected.Id.toString();
+                    internalSelectedTipoCondicao.value = selected.Id;
                 }
             }
         } else {
@@ -80,9 +80,11 @@ function emitSelection() {
 
 function validate() {
     errors.value = [];
+    const valueToValidate = internalSelectedTipoCondicao.value?.toString() || '';
+
     if (props.rules) {
         for (const rule of props.rules) {
-            const result = rule(internalSelectedTipoCondicao.value || '');
+            const result = rule(valueToValidate);
             if (result !== true) {
                 errors.value.push(result);
             }

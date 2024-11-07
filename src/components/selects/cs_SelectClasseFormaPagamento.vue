@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb026_Classe } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
@@ -39,7 +39,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma classe
 
 const formattedClasseFormaPagamento = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: '' },
         ...classeFormaPagamento.value.map((item) => ({
             title: item.Label,
             value: item.Id
@@ -49,7 +49,7 @@ const formattedClasseFormaPagamento = computed(() => {
 
 const fetchClasseFormaPagamento = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             classeFormaPagamento.value = response.data.csicp_bb026_Classe;
             if (internalSelectedClasseFormaPagamento.value) {

@@ -27,7 +27,6 @@ interface Item {
     Order: number;
 }
 
-//Ex:
 //Tipo = 1: Referente a SIM,NAO
 //Tipo = 2: Referente a ATIVO,INATIVO
 
@@ -47,10 +46,13 @@ const items = ref<Item[]>([]);
 const loading = ref(false);
 
 const formattedItems = computed(() => {
-    return items.value.map((item) => ({
-        title: item.Label,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: 0 },
+        ...items.value.map((item) => ({
+            title: item.Label,
+            value: item.Id
+        }))
+    ];
 });
 
 const selectedItem = ref<number | null>(props.modelValue);

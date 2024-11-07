@@ -22,7 +22,7 @@ import { getListEstaticasFF } from '../../services/estaticas/estaticas_ff';
 import type { Csicp_ff003_TpEsp_List } from '../../types/basico/estaticas/FF/ff_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -32,14 +32,14 @@ const props = defineProps<{
 }>();
 
 const tipoEspecie = ref<Csicp_ff003_TpEsp_List[]>([]);
-const internalSelectedTpEspecie = ref<string | null>(null);
+const internalSelectedTpEspecie = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo para a forma de pagamento');
 
 const formattedTpEspecie = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: 0 },
         ...tipoEspecie.value.map((item) => ({
             title: item.Label,
             value: item.Id
@@ -53,9 +53,9 @@ const fetchTipoEspecie = async () => {
         if (response.status === 200) {
             tipoEspecie.value = response.data.csicp_ff003_TpEsp_List;
             if (internalSelectedTpEspecie.value) {
-                const selected = tipoEspecie.value.find((especie) => especie.Id === Number(internalSelectedTpEspecie.value));
+                const selected = tipoEspecie.value.find((especie) => especie.Id === internalSelectedTpEspecie.value);
                 if (selected) {
-                    internalSelectedTpEspecie.value = selected.Id.toString();
+                    internalSelectedTpEspecie.value = selected.Id;
                 }
             }
         } else {
@@ -77,19 +77,4 @@ watch(internalSelectedTpEspecie, (newVal) => {
 function emitSelection() {
     emit('update:modelValue', internalSelectedTpEspecie.value);
 }
-
-function validate() {
-    errors.value = [];
-    if (props.rules) {
-        for (const rule of props.rules) {
-            const result = rule(internalSelectedTpEspecie.value || '');
-            if (result !== true) {
-                errors.value.push(result);
-            }
-        }
-    }
-    return errors.value.length === 0;
-}
-
-defineExpose({ validate });
 </script>

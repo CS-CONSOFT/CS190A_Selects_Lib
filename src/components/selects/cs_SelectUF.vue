@@ -42,10 +42,13 @@ const internalSelectedUF = ref<string | null>(props.modelValue);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma UF');
 
 const formattedUnidadesFederativas = computed(() => {
-    return unidadesFederativas.value.map((item) => ({
-        title: item.AA027_Sigla,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: '' },
+        ...unidadesFederativas.value.map((item) => ({
+            title: item.AA027_Sigla,
+            value: item.Id
+        }))
+    ];
 });
 
 // Função para buscar as unidades federativas baseado no ID do país

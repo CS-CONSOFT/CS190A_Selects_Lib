@@ -17,36 +17,39 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb026_Tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const tipoFormaPagamento = ref<Csicp_bb026_Tipo[]>([]);
-const internalSelectedTpFormaPagamento = ref<string | null>(null);
+const internalSelectedTpFormaPagamento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo para a forma de pagamento');
 
 const formattedTpFormaPagamento = computed(() => {
-    return tipoFormaPagamento.value.map((item) => ({
-        title: item.Label,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: 0 },
+        ...tipoFormaPagamento.value.map((item) => ({
+            title: item.Label,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchTipoFormaPagamento = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             tipoFormaPagamento.value = response.data.csicp_bb026_Tipo;
             if (internalSelectedTpFormaPagamento.value) {
-                const selected = tipoFormaPagamento.value.find((tipo) => tipo.Id === Number(internalSelectedTpFormaPagamento.value));
+                const selected = tipoFormaPagamento.value.find((tipo) => tipo.Id === internalSelectedTpFormaPagamento.value);
                 if (selected) {
-                    internalSelectedTpFormaPagamento.value = selected.Id.toString();
+                    internalSelectedTpFormaPagamento.value = selected.Id;
                 }
             }
         } else {

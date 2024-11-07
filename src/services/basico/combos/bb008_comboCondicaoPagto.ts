@@ -1,7 +1,7 @@
-import { URLBase } from '@/services/configuracoes_axios';
+import { URLBase } from '../../../services/configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { ComboCondicaoPagto, ApiResponseBB008Combo } from '@/types/basico/condicao_de_pagamento/combos/Combo_CondicaoPagtoTypes';
+import type { ComboCondicaoPagto, ApiResponseBB008Combo } from '../../../types/basico/condicao_de_pagamento/combos/Combo_CondicaoPagtoTypes';
 
 function getListCondicaoPagtoCombo(tenant: number | undefined): Promise<AxiosResponse<ApiResponseBB008Combo<ComboCondicaoPagto>>> {
     return axios.get<ApiResponseBB008Combo<ComboCondicaoPagto>>(

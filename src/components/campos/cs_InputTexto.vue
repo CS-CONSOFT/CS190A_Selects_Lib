@@ -8,7 +8,7 @@
         color="primary"
         :rows="textArea ? 4 : undefined"
         :rules="validationRules"
-        :maxlength="props.Prm_QuantiCaracteres ?? 30"
+        :maxlength="props.Prm_QuantiCaracteres ?? 50"
         ref="inputRef"
     >
         <template v-slot:label>

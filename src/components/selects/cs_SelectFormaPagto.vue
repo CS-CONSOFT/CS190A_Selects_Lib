@@ -35,10 +35,13 @@ const internalSelectedForma = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma condição');
 
 const formattedFormas = computed(() => {
-    return formas.value.map((item) => ({
-        title: item.BB026_FormaPagamento,
-        value: item.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...formas.value.map((item) => ({
+            title: item.BB026_FormaPagamento,
+            value: item.ID
+        }))
+    ];
 });
 
 const fetchFormasPagto = async () => {

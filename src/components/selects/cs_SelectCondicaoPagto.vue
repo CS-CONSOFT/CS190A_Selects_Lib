@@ -35,10 +35,13 @@ const internalSelectedCondicao = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma condição');
 
 const formattedCondicoes = computed(() => {
-    return condicoes.value.map((item) => ({
-        title: item.BB008_Condicao_Pagto,
-        value: item.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...condicoes.value.map((item) => ({
+            title: item.BB008_Condicao_Pagto,
+            value: item.ID
+        }))
+    ];
 });
 
 const fetchCondicoesPagto = async () => {

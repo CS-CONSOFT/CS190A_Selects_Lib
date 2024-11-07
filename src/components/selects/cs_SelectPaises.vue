@@ -36,10 +36,13 @@ const internalSelectedPais = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um país');
 
 const formattedPaises = computed(() => {
-    return paises.value.map((item) => ({
-        title: item.AA025_Descricao,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: '' },
+        ...paises.value.map((item) => ({
+            title: item.AA025_Descricao,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchPaises = async () => {

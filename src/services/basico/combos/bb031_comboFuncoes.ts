@@ -1,7 +1,7 @@
-import { URLBase } from '@/services/configuracoes_axios';
+import { URLBase } from '../../../services/configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { FuncoesCompleto, ApiResponse } from '@/types/basico/funcoes/bb031_funcoes';
+import type { FuncoesCompleto, ApiResponse } from '../../../types/basico/funcoes/bb031_funcoes';
 
 function GetListFuncoesCombo(tenant: number | undefined): Promise<AxiosResponse<ApiResponse<FuncoesCompleto>>> {
     return axios.get<ApiResponse<FuncoesCompleto>>(

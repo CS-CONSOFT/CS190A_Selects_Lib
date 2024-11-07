@@ -36,10 +36,13 @@ const internalSelectedRegiao = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma região');
 
 const formattedRegioes = computed(() => {
-    return regioes.value.map((item) => ({
-        title: item.AA026_Descricao,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: '' },
+        ...regioes.value.map((item) => ({
+            title: item.AA026_Descricao,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchRegioes = async () => {

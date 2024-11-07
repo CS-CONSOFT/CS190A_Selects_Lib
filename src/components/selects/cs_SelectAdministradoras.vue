@@ -35,10 +35,13 @@ const internalSelectedAdministradora = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma administradora');
 
 const formattedAdministradoras = computed(() => {
-    return administradoras.value.map((item) => ({
-        title: item.csicp_bb019.BB019_Administradora,
-        value: item.csicp_bb019.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...administradoras.value.map((item) => ({
+            title: item.csicp_bb019.BB019_Administradora,
+            value: item.csicp_bb019.ID
+        }))
+    ];
 });
 
 const fetchAdministradoras = async () => {

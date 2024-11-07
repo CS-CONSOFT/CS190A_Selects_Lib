@@ -3,8 +3,7 @@
         <template v-slot:activator="{ props: activatorProps }">
             <v-icon v-if="props.update" v-bind="activatorProps" class="v-btn-icon">mdi-pencil</v-icon>
 
-            <v-btn v-else prepend-icon="mdi-plus" v-bind="activatorProps" class="bg-primary mr-4" :text="props.title"
-                variant="flat" />
+            <v-btn v-else prepend-icon="mdi-plus" v-bind="activatorProps" class="bg-primary mr-4" :text="props.title" variant="flat" />
         </template>
 
         <v-card>
@@ -23,10 +22,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 
 const dialog = ref(false);
-
 
 const props = defineProps({
     dialog: Boolean,

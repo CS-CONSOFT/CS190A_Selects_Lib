@@ -23,21 +23,24 @@ import { getListEstaticasFF } from '../../services/estaticas/estaticas_ff';
 import type { Csicp_ff102_API_Banco_List } from '../../types/basico/estaticas/FF/ff_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const apis = ref<Csicp_ff102_API_Banco_List[]>([]);
-const internalSelectedAPIBanco = ref<string | null>(null);
+const internalSelectedAPIBanco = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione a API Banco');
 
 const formattedAPIBancos = computed(() => {
-    return apis.value.map((item) => ({
-        title: item.Label,
-        value: item.Id
-    }));
+    return [
+        { title: '', value: 0 },
+        ...apis.value.map((item) => ({
+            title: item.Label,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchAPIBancos = async () => {
@@ -46,9 +49,9 @@ const fetchAPIBancos = async () => {
         if (response.status === 200) {
             apis.value = response.data.csicp_ff102_API_Banco_List;
             if (internalSelectedAPIBanco.value) {
-                const selected = apis.value.find((pais) => pais.Id === Number(internalSelectedAPIBanco.value));
+                const selected = apis.value.find((pais) => pais.Id === internalSelectedAPIBanco.value);
                 if (selected) {
-                    internalSelectedAPIBanco.value = selected.Id.toString();
+                    internalSelectedAPIBanco.value = selected.Id;
                 }
             }
         } else {

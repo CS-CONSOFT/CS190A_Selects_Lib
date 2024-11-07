@@ -35,13 +35,16 @@ const internalSelectedCentroDeCusto = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um centro de custo');
 
 const formattedCentroDeCusto = computed(() => {
-    return centros.value.map((item) => ({
-        title: item.csicp_bb005.BB005_NomeCCusto,
-        value: item.csicp_bb005.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...centros.value.map((item) => ({
+            title: item.csicp_bb005.BB005_NomeCCusto,
+            value: item.csicp_bb005.ID
+        }))
+    ];
 });
 
-const fetchResponsaveis = async () => {
+const fetchCentroDeCusto = async () => {
     try {
         const response = await GetListCentroDeCustoCombo(tenant);
         if (response.status === 200) {
@@ -61,7 +64,7 @@ const fetchResponsaveis = async () => {
 };
 
 onMounted(async () => {
-    await fetchResponsaveis();
+    await fetchCentroDeCusto();
 });
 
 watch(internalSelectedCentroDeCusto, (newVal) => {

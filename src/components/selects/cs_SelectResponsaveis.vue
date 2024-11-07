@@ -35,10 +35,13 @@ const internalSelectedResponsavel = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um responsável');
 
 const formattedResponsavel = computed(() => {
-    return responsaveis.value.map((item) => ({
-        title: item.BB007_NomeReduzido,
-        value: item.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...responsaveis.value.map((item) => ({
+            title: item.BB007_NomeReduzido,
+            value: item.ID
+        }))
+    ];
 });
 
 const fetchResponsaveis = async () => {

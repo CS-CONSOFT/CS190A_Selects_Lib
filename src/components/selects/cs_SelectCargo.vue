@@ -35,13 +35,16 @@ const internalSelectedCargo = ref<string | null>(null);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um cargo');
 
 const formattedCargo = computed(() => {
-    return cargos.value.map((item: { csicp_bb032: { BB032_Cargo: any; ID: any } }) => ({
-        title: item.csicp_bb032.BB032_Cargo,
-        value: item.csicp_bb032.ID
-    }));
+    return [
+        { title: '', value: '' },
+        ...cargos.value.map((item) => ({
+            title: item.csicp_bb032.BB032_Cargo,
+            value: item.csicp_bb032.ID
+        }))
+    ];
 });
 
-const fetchResponsaveis = async () => {
+const fetchCargos = async () => {
     try {
         const response = await GetListCargosCombo(tenant);
         if (response.status === 200) {
@@ -63,7 +66,7 @@ const fetchResponsaveis = async () => {
 };
 
 onMounted(async () => {
-    await fetchResponsaveis();
+    await fetchCargos();
 });
 
 watch(internalSelectedCargo, (newVal) => {

@@ -43,7 +43,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Contatos');
 
 const formattedContatos = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: '' },
         ...contatos.value.map((item) => ({
             title: `${item.BB035_PrimeiroNome} ${item.BB035_Sobrenome}`,
             value: item.Id

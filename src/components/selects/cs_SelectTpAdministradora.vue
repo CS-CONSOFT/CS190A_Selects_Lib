@@ -18,38 +18,41 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasBB } from '../../services/estaticas/estaticas_bb';
+import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
 import type { Csicp_bb019_Tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const tipoAdministradoras = ref<Csicp_bb019_Tipo[]>([]);
-const internalSelectedTpAdministradora = ref<string | null>(null);
+const internalSelectedTpAdministradora = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de administradora');
 
 const formattedTpAdministradoras = computed(() => {
-    return tipoAdministradoras.value.map((item) => ({
-        title: item.Label,
-        value: item.Id.toString()
-    }));
+    return [
+        { title: '', value: 0 },
+        ...tipoAdministradoras.value.map((item) => ({
+            title: item.Label,
+            value: item.Id
+        }))
+    ];
 });
 
 const fetchTipoAdministradoras = async () => {
     try {
-        const response = await getListEstaticasBB();
+        const response = await GetListEstaticasBB();
         if (response.status === 200) {
             tipoAdministradoras.value = response.data.csicp_bb019_Tipo;
             if (internalSelectedTpAdministradora.value) {
                 const selected = tipoAdministradoras.value.find(
-                    (administradora) => administradora.Id.toString() === internalSelectedTpAdministradora.value
+                    (administradora) => administradora.Id === internalSelectedTpAdministradora.value
                 );
                 if (selected) {
-                    internalSelectedTpAdministradora.value = selected.Id.toString();
+                    internalSelectedTpAdministradora.value = selected.Id;
                 }
             }
         } else {

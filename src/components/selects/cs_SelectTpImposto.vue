@@ -41,7 +41,7 @@ const formattedTpImposto = computed(() => {
     ];
 });
 
-const fetchTipoFormaPagamento = async () => {
+const fetchTipoImposto = async () => {
     try {
         const response = await getListEstaticasAA();
         if (response.status === 200) {
@@ -61,7 +61,7 @@ const fetchTipoFormaPagamento = async () => {
 };
 
 onMounted(async () => {
-    await fetchTipoFormaPagamento();
+    await fetchTipoImposto();
 });
 
 watch(internalSelectedTpImposto, (newVal) => {

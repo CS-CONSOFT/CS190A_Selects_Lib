@@ -1,7 +1,7 @@
-import { URLBase } from '@/services/configuracoes_axios';
+import { URLBase } from '../../../services/configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type { ComboCentroDeCusto, ApiResponse } from '@/types/basico/centro_de_custo/combo/Combo_CentroDeCustoTypes';
+import type { ComboCentroDeCusto, ApiResponse } from '../../../types/basico/centro_de_custo/combo/Combo_CentroDeCustoTypes';
 
 function GetListCentroDeCustoCombo(tenant: number | undefined): Promise<AxiosResponse<ApiResponse<ComboCentroDeCusto>>> {
     return axios.get<ApiResponse<ComboCentroDeCusto>>(

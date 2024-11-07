@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { EstaticasBB012 } from '@/types/basico/estaticas/BB/bb012_estaticas';
 
-async function getListEstaticasBB012(): Promise<AxiosResponse<EstaticasBB012>> {
+async function GetListEstaticasBB012(): Promise<AxiosResponse<EstaticasBB012>> {
     try {
         return await axios.get<EstaticasBB012>(`${URLBase}/CSR_BB100_ClienteFor_IS/rest/CS_Contas/bb012_Estaticas`);
     } catch (error) {
@@ -12,4 +12,4 @@ async function getListEstaticasBB012(): Promise<AxiosResponse<EstaticasBB012>> {
     }
 }
 
-export { getListEstaticasBB012 };
+export { GetListEstaticasBB012 };

@@ -42,7 +42,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma espéc
 
 const formattedEspecie = computed(() => {
     return [
-        { title: '', value: null },
+        { title: '', value: '' },
         ...especie.value.map((item: { FF003_Descricao: any; Id: any }) => ({
             title: item.FF003_Descricao,
             value: item.Id

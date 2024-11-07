@@ -41,23 +41,26 @@ import { getListEstaticasSpedCFOP } from '../../services/estaticas/sped_cfop';
 import type { SpedInCFOP } from '../../types/basico/estaticas/SPED/sped_in_cfop_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const cfops = ref<SpedInCFOP[]>([]);
-const internalSelectedCFOP = ref<string | null>(null);
+const internalSelectedCFOP = ref<number | null>(null);
 const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um código CFOP');
 
 const filteredCfop = computed(() => {
     if (!search.value) {
-        return cfops.value.map((item) => ({
-            title: `${item.Codigo} - ${item.Descricao}`,
-            value: item.Id
-        }));
+        return [
+            { title: '', value: 0 },
+            ...cfops.value.map((item) => ({
+                title: `${item.Codigo} - ${item.Descricao}`,
+                value: item.Id
+            }))
+        ];
     }
 
     const searchText = search.value.toLowerCase();
@@ -75,9 +78,9 @@ const fetchCfop = async () => {
         if (response.status === 200) {
             cfops.value = response.data.sped_in_CFOP;
             if (internalSelectedCFOP.value) {
-                const selected = cfops.value.find((cfop) => cfop.Id === Number(internalSelectedCFOP.value));
+                const selected = cfops.value.find((cfop) => cfop.Id === internalSelectedCFOP.value);
                 if (selected) {
-                    internalSelectedCFOP.value = selected.Id.toString();
+                    internalSelectedCFOP.value = selected.Id;
                 }
             }
         } else {
@@ -100,17 +103,3 @@ function emitSelection() {
     emit('update:modelValue', internalSelectedCFOP.value);
 }
 </script>
-<style scoped>
-.sticky-search-field {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    color: lightgray;
-    padding: 0;
-    margin: 0;
-}
-
-.custom-select-menu {
-    padding: 0 !important;
-}
-</style>

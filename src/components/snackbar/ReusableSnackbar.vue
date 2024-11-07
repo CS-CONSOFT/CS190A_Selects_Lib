@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -33,9 +33,12 @@ const emit = defineEmits(['update:modelValue']);
 const isVisible = ref(props.modelValue);
 
 // Atualiza o estado do snackbar quando a prop modelValue muda
-watch(() => props.modelValue, (newVal) => {
-    isVisible.value = newVal;
-});
+watch(
+    () => props.modelValue,
+    (newVal) => {
+        isVisible.value = newVal;
+    }
+);
 
 // Fechar o snackbar e emitir o evento para atualizar a prop modelValue
 function closeSnackbar() {

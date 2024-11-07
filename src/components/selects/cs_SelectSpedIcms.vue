@@ -28,7 +28,7 @@ import { getListEstaticasSpedICMS } from '../../services/estaticas/sped_icms';
 import type { SpedInICMS } from '../../types/basico/estaticas/SPED/sped_in_icms_estaticas';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -38,7 +38,7 @@ const props = defineProps<{
 }>();
 
 const documentos = ref<SpedInICMS[]>([]);
-const internalSelectedDocumento = ref<string | null>(null);
+const internalSelectedDocumento = ref<number | null>(null);
 const search = ref<string>('');
 const errors = ref<string[]>([]);
 
@@ -46,10 +46,13 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um modelo 
 
 const filteredDoc = computed(() => {
     if (!search.value) {
-        return documentos.value.map((item) => ({
-            title: `${item.Label}`,
-            value: item.Id
-        }));
+        return [
+            { title: '', value: '' },
+            ...documentos.value.map((item) => ({
+                title: `${item.Label}`,
+                value: item.Id
+            }))
+        ];
     }
 
     const searchText = search.value.toLowerCase();
@@ -67,9 +70,9 @@ const fetchDocumentosFiscais = async () => {
         if (response.status === 200) {
             documentos.value = response.data.sped_in_doc_ICMS;
             if (internalSelectedDocumento.value) {
-                const selected = documentos.value.find((documento) => documento.Id === Number(internalSelectedDocumento.value));
+                const selected = documentos.value.find((documento) => documento.Id === internalSelectedDocumento.value);
                 if (selected) {
-                    internalSelectedDocumento.value = selected.Id.toString();
+                    internalSelectedDocumento.value = selected.Id;
                 }
             }
         } else {
@@ -94,9 +97,11 @@ function emitSelection() {
 
 function validate() {
     errors.value = [];
+    const valueToValidate = internalSelectedDocumento.value?.toString() || '';
+
     if (props.rules) {
         for (const rule of props.rules) {
-            const result = rule(internalSelectedDocumento.value || '');
+            const result = rule(valueToValidate);
             if (result !== true) {
                 errors.value.push(result);
             }
