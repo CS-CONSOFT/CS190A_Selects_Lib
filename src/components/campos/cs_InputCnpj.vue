@@ -71,6 +71,7 @@ const validationRules = computed(() => {
     }
 
     rules.push((v: string) => {
+        if (typeof v !== 'string') return true;
         const cleanValue = v.replace(/\D/g, '');
         if (cleanValue.length === 14) {
             return validarCNPJ(cleanValue) || 'CNPJ inválido';

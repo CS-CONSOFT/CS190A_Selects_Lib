@@ -16,7 +16,7 @@
             <cs_InputCep :initialCep="cepValue" :readonly="false" :Prm_isObrigatorio="true" @cep-info="handleCepInfo" />
         </div>
         <div>
-            <cs_SelectTratamento :Prm_isObrigatorio="false" />
+            <cs_SelectTratamento class="mb-6" :Prm_isObrigatorio="false" />
         </div>
         <div>
             <cs_SelectZona Prm_etiqueta="Venda Rota" :Prm_limpavel="false" :Prm_isObrigatorio="false" />
@@ -40,6 +40,5 @@ const cepValue = ref('12345678');
 // Função para tratar o evento 'cep-info' e capturar os dados do CEP
 const handleCepInfo = (info: any) => {
     console.log('Informações do CEP:', info);
-    // Aqui você pode armazenar as informações em uma variável ou fazer outras ações
 };
 </script>

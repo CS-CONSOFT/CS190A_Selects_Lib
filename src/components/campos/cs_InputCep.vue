@@ -48,11 +48,19 @@ const onInput = async () => {
     }
 };
 
-// Função para buscar o CEP
+// Função para buscar o CEP e verificar a resposta
 const fetchCep = async (cepVal: string) => {
     try {
         const numericCep = Number(cepVal);
         const info = await getCep(numericCep);
+
+        // Verifica se a resposta contém um erro
+        if ((info as any).erro === 'true') {
+            cepError.value = 'CEP inválido';
+        } else {
+            // Emite o evento com a informação do CEP se for válido
+            emit('cep-info', info as CEP);
+        }
     } catch (error) {
         console.error('Erro ao buscar informações do CEP:', error);
         cepError.value = 'Erro ao buscar informações do CEP';
@@ -80,6 +88,7 @@ watch(
     }
 );
 </script>
+
 <script lang="ts">
 export default {
     directives: {
