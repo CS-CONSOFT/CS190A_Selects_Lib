@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, defineProps, defineEmits, nextTick } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import { mask } from 'vue-the-mask';
-import { getCep } from '../../services/enderecamento/viacep';
+import { getCep } from '../../services/outros/viacep/viacep';
 import type { CEP } from '../../types/enderecamento/CepTypes';
 
 const props = defineProps<{
