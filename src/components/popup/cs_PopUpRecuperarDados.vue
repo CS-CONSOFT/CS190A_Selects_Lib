@@ -66,20 +66,19 @@
             <template v-slot:actions>
                 <v-spacer></v-spacer>
 
-                <v-btn prepend-icon="mdi-share" color="success" variant="flat" @click="emitCnpjData"> Enviar </v-btn>
-                <cs_BtnCancelar @click="closeDialogFator" />
+                <v-btn prepend-icon="mdi-share" color="success" variant="flat" @click="emitirDadosCnpj"> Enviar </v-btn>
+                <cs_BtnCancelar @click="fecharPopup" />
             </template>
         </v-card>
     </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import cs_InputCnpj from '../campos/cs_InputCnpj.vue';
 import cs_BtnCancelar from '../botoes/cs_BtnCancelar.vue';
 
 const dialogDados = ref(false);
-const modelo = ref<string>('');
 
 // Variável para armazenar os dados do CNPJ
 const cnpjData = ref({
@@ -115,22 +114,6 @@ const cnpjData = ref({
     opcao_pelo_simples: false,
     opcao_pelo_mei: false
 });
-
-// Define o emit
-const emit = defineEmits(['enviarDadosCnpj']);
-
-function handleCnpjData(data: any) {
-    cnpjData.value = data;
-}
-
-function openDialogFator() {
-    dialogDados.value = true;
-}
-
-function closeDialogFator() {
-    dialogDados.value = false;
-    resetCnpjData();
-}
 
 function resetCnpjData() {
     cnpjData.value = {
@@ -168,12 +151,25 @@ function resetCnpjData() {
     };
 }
 
-function emitCnpjData() {
+// Define os eventos aceitos pelo componente
+const emit = defineEmits(['update:modelValue', 'enviarDadosCnpj']);
+
+function handleCnpjData(data: any) {
+    cnpjData.value = data;
+}
+
+function emitirDadosCnpj() {
     emit('enviarDadosCnpj', cnpjData.value);
 }
 
+function fecharPopup() {
+    dialogDados.value = false;
+    emit('update:modelValue', false);
+}
+
 defineExpose({
-    openDialogFator,
-    closeDialogFator
+    openDialogFator() {
+        dialogDados.value = true;
+    }
 });
 </script>
