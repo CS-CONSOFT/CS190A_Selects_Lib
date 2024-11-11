@@ -10,6 +10,9 @@
             <cs_InputCelular :Prm_limpavel="false" :Prm_isObrigatorio="true" />
         </div>
         <div>
+            <cs_InputNumInteiro Prm_etiqueta="Código" :Prm_limpavel="false" :Prm_isObrigatorio="true" />
+        </div>
+        <div>
             <cs_InputTelefone :Prm_limpavel="false" :Prm_isObrigatorio="true" />
         </div>
         <div>
@@ -40,6 +43,7 @@ import cs_InputCep from '@/components/campos/cs_InputCep.vue';
 import cs_SelectTratamento from '@/components/selects/cs_SelectTratamento.vue';
 import cs_SelectZona from '@/components/selects/cs_SelectZona.vue';
 import PopupConsultarCnpj from '@/components/popup/cs_PopUpRecuperarDados.vue';
+import cs_InputNumInteiro from '@/components/campos/cs_InputNumInteiro.vue';
 
 // Variável para armazenar o CEP inicial ou o valor alterado
 const cepValue = ref('12345678');
