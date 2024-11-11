@@ -66,7 +66,7 @@
             <template v-slot:actions>
                 <v-spacer></v-spacer>
 
-                <v-btn prepend-icon="mdi-share" color="success" variant="flat" @click="emitirDadosCnpj"> Enviar </v-btn>
+                <v-btn prepend-icon="mdi-share" color="success" variant="flat" @click="enviarDados">Enviar</v-btn>
                 <cs_BtnCancelar @click="fecharPopup" />
             </template>
         </v-card>
@@ -158,8 +158,10 @@ function handleCnpjData(data: any) {
     cnpjData.value = data;
 }
 
-function emitirDadosCnpj() {
+function enviarDados() {
     emit('enviarDadosCnpj', cnpjData.value);
+    emit('update:modelValue', false); // Fecha o popup imediatamente após enviar
+    resetCnpjData();
 }
 
 function fecharPopup() {
