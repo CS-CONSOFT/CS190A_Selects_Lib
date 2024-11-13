@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListTpCobrancaCombo } from '@/services/basico/combos/bb009_comboTpCobranca';
-import type { Lista_bb009 } from '@/types/basico/tipo_de_cobranca/bb009_TpCobranca';
+import { GetListTpCobrancaCombo } from '../../services/basico/combos/bb009_comboTpCobranca';
+import type { Lista_bb009 } from '../../types/basico/tipo_de_cobranca/bb009_TpCobranca';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
