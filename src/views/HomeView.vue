@@ -30,6 +30,13 @@
             <!-- Componente de popup -->
             <PopupConsultarCnpj ref="popupCnpj" />
         </div>
+        <div>
+            <cs_SelectAgCobrador class="mb-6" :Prm_isObrigatorio="false" />
+        </div>
+
+        <cs_SelectConvenioMaster class="mb-6" :Prm_isObrigatorio="false" />
+
+        <cs_SelectTpCobranca class="mb-6" :Prm_isObrigatorio="false" />
     </v-container>
 </template>
 
@@ -44,6 +51,9 @@ import cs_SelectTratamento from '@/components/selects/cs_SelectTratamento.vue';
 import cs_SelectZona from '@/components/selects/cs_SelectZona.vue';
 import PopupConsultarCnpj from '@/components/popup/cs_PopUpRecuperarDados.vue';
 import cs_InputNumInteiro from '@/components/campos/cs_InputNumInteiro.vue';
+import cs_SelectAgCobrador from '@/components/selects/cs_SelectAgCobrador.vue';
+import cs_SelectConvenioMaster from '@/components/selects/cs_SelectConvenioMaster.vue';
+import cs_SelectTpCobranca from '@/components/selects/cs_SelectTpCobranca.vue';
 
 // Variável para armazenar o CEP inicial ou o valor alterado
 const cepValue = ref('12345678');
