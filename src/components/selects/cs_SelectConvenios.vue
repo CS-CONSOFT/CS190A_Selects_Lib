@@ -15,11 +15,12 @@
         </template>
     </v-select>
 </template>
+
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListConvenioMasterCombo } from '../../services/basico/combos/bb067_comboConvenioMaster';
-import type { Csicp_bb067 } from '../../types/crm/combos/combo_ConvenioMasterTypes';
+import { getListConvenioCombo } from '../../services/contas/combos/bb060_ComboConvenio';
+import type { Convenio_List } from '../../types/crm/combos/combo_ConvenioTypes';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: number | null): void;
@@ -29,42 +30,42 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const convenio = ref<Csicp_bb067[]>([]);
+const convenios = ref<Convenio_List[]>([]);
 const internalSelectedConvenio = ref<number | null>(null);
 
-const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um convênio master');
+const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um convênio');
 
 const formattedConvenio = computed(() => {
     return [
         { title: '', value: '' },
-        ...convenio.value.map((item) => ({
-            title: item.bb067_Descricao,
-            value: item.bb067_Id
+        ...convenios.value.map((item) => ({
+            title: item.bb060_Descricao,
+            value: item.bb060_ConvenioId
         }))
     ];
 });
 
-const fetchConvenioMaster = async () => {
+const fetchConvenios = async () => {
     try {
-        const response = await GetListConvenioMasterCombo(tenant);
+        const response = await getListConvenioCombo(tenant);
         if (response.status === 200) {
-            convenio.value = response.data.ConvenioMaster;
+            convenios.value = response.data.Convenio_List;
             if (internalSelectedConvenio.value) {
-                const selected = convenio.value.find((convenio) => convenio.bb067_Id === internalSelectedConvenio.value);
+                const selected = convenios.value.find((convenio) => convenio.bb060_ConvenioId === internalSelectedConvenio.value);
                 if (selected) {
-                    internalSelectedConvenio.value = selected.bb067_Id;
+                    internalSelectedConvenio.value = selected.bb060_ConvenioId;
                 }
             }
         } else {
-            console.error('Erro ao buscar os convênios master:', response.statusText);
+            console.error('Erro ao buscar os convênios:', response.statusText);
         }
     } catch (error) {
-        console.error('Erro ao buscar os convênios master:', error);
+        console.error('Erro ao buscar os convênios:', error);
     }
 };
 
 onMounted(async () => {
-    await fetchConvenioMaster();
+    await fetchConvenios();
 });
 
 watch(internalSelectedConvenio, (newVal) => {
