@@ -37,7 +37,7 @@ const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um convên
 
 const formattedConvenio = computed(() => {
     return [
-        { title: '', value: '' },
+        { title: '', value: 0 },
         ...convenios.value.map((item) => ({
             title: item.bb060_Descricao,
             value: item.bb060_ConvenioId
