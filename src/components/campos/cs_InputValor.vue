@@ -31,7 +31,7 @@ interface Props {
 const props = defineProps<Props>();
 
 // Define os eventos emitidos
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'clean-value']);
 
 // Estado interno do valor numérico
 const numericValue = ref<number | null>(null);
@@ -73,14 +73,12 @@ function handleInput(event: InputEvent) {
     formattedValue.value = target.value;
 }
 
-// Valor bruto para envio à API
-const rawValue = computed(() => numericValue.value ?? 0);
-
-// Watcher para sincronizar com o pai
+// Watcher para sincronizar com o pai e emitir o valor limpo
 watch(
-    formattedValue,
+    numericValue,
     (newValue) => {
-        emit('update:modelValue', newValue); // Emite o valor formatado (bruto) para o componente pai
+        emit('update:modelValue', formattedValue.value); // Emite o valor formatado
+        emit('clean-value', newValue); // Emite o valor limpo (número bruto) para o pai
     },
     { immediate: true }
 );
