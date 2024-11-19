@@ -1,18 +1,10 @@
 <template>
-    <v-text-field
-        v-model="modelo"
-        variant="solo-filled"
-        dense
-        :clearable="props.Prm_limpavel"
-        color="primary"
-        :rules="validationRules"
-        ref="inputRef"
-        placeholder="Digite o CNPJ"
-        v-mask="cnpjMask"
-        @click:clear="limparDados"
-    >
+    <v-text-field v-model="modelo" variant="solo-filled" dense :clearable="props.Prm_limpavel" color="primary"
+        :rules="validationRules" ref="inputRef" placeholder="Digite o CNPJ" v-mask="cnpjMask"
+        @click:clear="limparDados">
         <template v-slot:label>
-            <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
+            <span class="d-flex align-center"
+                style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
                 {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
         </template>
@@ -21,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { mask } from 'vue-the-mask';
+//import { mask } from 'vue-the-mask';
 import { VTextField } from 'vuetify/components';
 import { getCnpj } from '../../services/outros/receita/getcnpj';
 
@@ -123,7 +115,7 @@ defineExpose({
 <script lang="ts">
 export default {
     directives: {
-        mask
+        //mask
     }
 };
 </script>

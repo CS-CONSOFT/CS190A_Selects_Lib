@@ -1,17 +1,9 @@
 <template>
-    <v-text-field
-        v-model="cep"
-        label="CEP"
-        @input="onInput"
-        variant="solo-filled"
-        :readonly="props.readonly"
-        maxlength="9"
-        placeholder="Digite somente números"
-        v-mask="'#####-###'"
-        :error-messages="cepError"
-    >
+    <v-text-field v-model="cep" label="CEP" @input="onInput" variant="solo-filled" :readonly="props.readonly"
+        maxlength="9" placeholder="Digite somente números" v-mask="'#####-###'" :error-messages="cepError">
         <template v-slot:label>
-            <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
+            <span class="d-flex align-center"
+                style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
                 CEP
                 <span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
@@ -21,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick } from 'vue';
-import { mask } from 'vue-the-mask';
+//import { mask } from 'vue-the-mask';
 import { getCep } from '../../services/outros/viacep/viacep';
 import type { CEP } from '../../types/enderecamento/CepTypes';
 
@@ -92,7 +84,7 @@ watch(
 <script lang="ts">
 export default {
     directives: {
-        mask
+        //mask
     }
 };
 </script>
