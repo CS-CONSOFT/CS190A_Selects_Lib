@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-//import { mask } from 'vue-the-mask';
+import { mask } from 'vue-the-mask';
 import { VTextField } from 'vuetify/components';
 import { getCnpj } from '../../services/outros/receita/getcnpj';
 
@@ -115,7 +115,7 @@ defineExpose({
 <script lang="ts">
 export default {
     directives: {
-        //mask
+        mask
     }
 };
 </script>

@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick } from 'vue';
-//import { mask } from 'vue-the-mask';
+import { mask } from 'vue-the-mask';
 import { getCep } from '../../services/outros/viacep/viacep';
 import type { CEP } from '../../types/enderecamento/CepTypes';
 
@@ -84,7 +84,7 @@ watch(
 <script lang="ts">
 export default {
     directives: {
-        //mask
+        mask
     }
 };
 </script>

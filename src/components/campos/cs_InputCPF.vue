@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-//import { mask } from 'vue-the-mask';
+import { mask } from 'vue-the-mask';
 import type { VInput } from 'vuetify/components';
 
 const props = defineProps<{
@@ -78,7 +78,7 @@ defineExpose({
 <script lang="ts">
 export default {
     directives: {
-        //mask
+        mask
     }
 };
 </script>
