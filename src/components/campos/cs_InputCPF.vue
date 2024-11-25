@@ -1,9 +1,18 @@
 <template>
-    <v-text-field v-model="modelo" variant="solo-filled" dense :clearable="props.Prm_limpavel" color="primary"
-        :rules="validationRules" ref="inputRef" placeholder="Digite o CPF" v-mask="cpfMask">
+    <v-text-field
+        v-model="modelo"
+        variant="solo-filled"
+        dense
+        :clearable="props.Prm_limpavel"
+        color="primary"
+        :rules="validationRules"
+        ref="inputRef"
+        placeholder="Digite o CPF"
+        v-mask="cpfMask"
+        @blur="emitirCpfLimpo"
+    >
         <template v-slot:label>
-            <span class="d-flex align-center"
-                style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
+            <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
                 {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
         </template>
@@ -26,9 +35,18 @@ const modelo = ref('');
 const inputRef = ref<InstanceType<typeof VInput> | null>(null);
 const cpfMask = '###.###.###-##';
 
+const emit = defineEmits<{
+    (event: 'cpf-limpo', cpf: string): void;
+}>();
+
+// Função para limpar CPF
+function limparCPF(cpf: string): string {
+    return cpf.replace(/\D/g, ''); // Remove tudo que não é número
+}
+
 // Validação para CPF
 function validarCPF(cpf: string): boolean {
-    cpf = cpf.replace(/\D/g, '');
+    cpf = limparCPF(cpf);
     if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
 
     let soma = 0;
@@ -58,7 +76,7 @@ const validationRules = computed(() => {
     // Validação para CPF
     rules.push((v: string) => {
         if (typeof v !== 'string') return 'Valor inválido';
-        const cleanValue = v.replace(/\D/g, '');
+        const cleanValue = limparCPF(v);
         if (cleanValue.length === 11) {
             return validarCPF(cleanValue) || 'CPF inválido';
         }
@@ -67,6 +85,14 @@ const validationRules = computed(() => {
 
     return rules;
 });
+
+// Emitir CPF limpo
+function emitirCpfLimpo() {
+    const cpfLimpo = limparCPF(modelo.value);
+    if (validarCPF(cpfLimpo)) {
+        emit('cpf-limpo', cpfLimpo); // Emite o CPF limpo
+    }
+}
 
 const validate = () => inputRef.value?.validate?.();
 
