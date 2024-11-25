@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="isDialogOpen" max-width="700px">
+    <v-dialog v-model="isDialogOpen" max-width="700px" persistent>
         <v-card>
             <v-card-title class="text-h6 d-flex">
                 Consultar CNPJ
