@@ -131,6 +131,7 @@ export interface Code_Erro {
 }
 
 export interface ApiResponseNatureza<T> {
+    Lista_bb025: { ID: string; BB025_Filial: number; BB025_Codigo: string; BB025_Descricao: string; BB025_Gera_Duplicata: number; BB025_Usa_Tabela_Preco: number; BB025_CodTpTransacao: number; BB025_TransacaoID: string; BB025_Grupo_Contabil: number; BB025_ModDoctoFiscal: string; BB025_CFOPDentroEstado: string; BB025_CFOPForaEstado: string; BB025_BaixaEstoque: number; EmpresaID: string; BB025_IsActive: boolean; BB025_ModDoctoFiscal_ID: number; bb025_ValorizarPrecoID: number; }[];
     Lista_bb025_Completo: any;
     PageSize: any;
     data: T;
