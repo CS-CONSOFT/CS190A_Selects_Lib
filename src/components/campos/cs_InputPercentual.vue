@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits } from 'vue';
+import { ref, watch } from 'vue';
 
 interface Props {
     Prm_etiqueta?: string;
