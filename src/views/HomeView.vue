@@ -5,9 +5,11 @@
 
     <cs_SelectVencimento class="mb-5" v-model="modelo" :Prm_isObrigatorio="false" />
 
+    <cs_SelectNaturezaOperacao class="mb-5" :Prm_isObrigatorio="false" />
+
     <v-btn color="primary" @click="abrirPopup">Consultar CNPJ</v-btn>
 
-    <cs_InputCPF :Prm_isObrigatorio="true" :Prm_limpavel="true" @cpf-limpo="capturarCpfLimpo" />
+    <cs_InputCPF class="mb-5" :Prm_isObrigatorio="true" :Prm_limpavel="true" @cpf-limpo="capturarCpfLimpo" />
 
     <cs_PopUpConsultarCnpj :Prm_isVisivel="isPopupOpen" @close="isPopupOpen = false" @cnpjData="handleCnpjData" />
 </template>
@@ -18,8 +20,9 @@ import { ref } from 'vue';
 import cs_SelectConvenios from '../components/selects/cs_SelectConvenios.vue';
 import cs_SelectPaises from '../components/selects/cs_SelectPaises.vue';
 import cs_SelectVencimento from '../components/selects/cs_SelectVencimento.vue';
-import cs_PopUpConsultarCnpj from '@/components/popup/cs_PopUpConsultarCnpj.vue';
+import cs_PopUpConsultarCnpj from '../components/popup/cs_PopUpConsultarCnpj.vue';
 import cs_InputCPF from '../components/campos/cs_InputCPF.vue';
+import cs_SelectNaturezaOperacao from '../components/selects/cs_SelectNaturezaOperacao.vue';
 
 const modelo = '';
 const isPopupOpen = ref(false);

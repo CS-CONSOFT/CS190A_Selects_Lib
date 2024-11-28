@@ -20,7 +20,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetNaturezaCombo } from '../../services/basico/combos/bb025_comboNatureza';
-import type { Csicp_bb025 } from '../../types/basico/natureza/bb025_naturezaOperacao';
+import type { Csicp_bb025, Lista_bb025_Completo } from '../../types/basico/natureza/bb025_naturezaOperacao';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -30,7 +30,7 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const natureza = ref<Csicp_bb025[]>([]);
+const natureza = ref<Lista_bb025_Completo[]>([]);
 const internalSelectedNatureza = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma natureza de operação');
@@ -39,8 +39,8 @@ const formattedNatureza = computed(() => {
     return [
         { title: '', value: '' },
         ...natureza.value.map((item) => ({
-            title: item.BB025_Descricao,
-            value: item.ID
+            title: item.Lista_bb025.csicp_bb025.BB025_Descricao,
+            value: item.Lista_bb025.csicp_bb025.ID
         }))
     ];
 });
@@ -49,11 +49,12 @@ const fetchNatureza = async () => {
     try {
         const response = await GetNaturezaCombo(tenant);
         if (response.status === 200) {
-            natureza.value = response.data.Lista_bb025;
+            natureza.value = response.data.Lista_bb025_Completo;
+            console.log(response);
             if (internalSelectedNatureza.value) {
-                const selected = natureza.value.find((natureza) => natureza.ID === internalSelectedNatureza.value);
+                const selected = natureza.value.find((natureza) => natureza.Lista_bb025.csicp_bb025.ID === internalSelectedNatureza.value);
                 if (selected) {
-                    internalSelectedNatureza.value = selected.ID;
+                    internalSelectedNatureza.value = selected.Lista_bb025.csicp_bb025.ID;
                 }
             }
         } else {
