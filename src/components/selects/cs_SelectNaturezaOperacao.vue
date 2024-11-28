@@ -20,7 +20,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { GetNaturezaCombo } from '../../services/basico/combos/bb025_comboNatureza';
-import type { Csicp_bb025, Lista_bb025_Completo } from '../../types/basico/natureza/bb025_naturezaOperacao';
+import type { Lista_bb025_Completo } from '../../types/basico/natureza/bb025_naturezaOperacao';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -50,7 +50,6 @@ const fetchNatureza = async () => {
         const response = await GetNaturezaCombo(tenant);
         if (response.status === 200) {
             natureza.value = response.data.Lista_bb025_Completo;
-            console.log(response);
             if (internalSelectedNatureza.value) {
                 const selected = natureza.value.find((natureza) => natureza.Lista_bb025.csicp_bb025.ID === internalSelectedNatureza.value);
                 if (selected) {

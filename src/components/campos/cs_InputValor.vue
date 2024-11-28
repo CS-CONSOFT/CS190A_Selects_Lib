@@ -4,13 +4,13 @@
         variant="solo-filled"
         dense
         :clearable="props.Prm_Limpavel"
+        :rules="validationRules"
         color="primary"
-        :label="labelText"
         @input="handleInput"
     >
         <template v-slot:label>
             <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
-                {{ props.Prm_etiqueta }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
+                {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
         </template>
     </v-text-field>
@@ -25,6 +25,7 @@ interface Props {
     Prm_Limpavel?: boolean;
     Prm_ValueMax?: number;
     Prm_Precision?: number;
+    modelValue?: number | string;
 }
 
 // Definição das props
@@ -34,21 +35,16 @@ const props = defineProps<Props>();
 const emit = defineEmits(['update:modelValue', 'clean-value']);
 
 // Estado interno do valor numérico
-const numericValue = ref<number | null>(null);
+const numericValue = ref<any>(null);
 
-// Rótulo do campo com indicação obrigatória
-const labelText = computed(() => {
-    return `${props.Prm_etiqueta || ''} ${props.Prm_isObrigatorio ? '*' : ''}`;
-});
-
-// Valor formatado para exibição no campo
+// Reatividade para o valor formatado
 const formattedValue = computed({
     get() {
         if (numericValue.value === null) return '';
         return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-            minimumFractionDigits: props.Prm_Precision ?? 2
+            style: 'decimal',
+            minimumFractionDigits: props.Prm_Precision ?? 2,
+            maximumFractionDigits: props.Prm_Precision ?? 2
         }).format(numericValue.value);
     },
     set(value: string) {
@@ -65,6 +61,17 @@ const formattedValue = computed({
     }
 });
 
+// Validação das regras
+const validationRules = computed(() => {
+    const rules = [];
+    if (props.Prm_isObrigatorio) {
+        rules.push((v: string) => !!v || 'Este campo é obrigatório');
+    }
+    return rules;
+});
+
+const computedLabel = computed(() => props.Prm_etiqueta || 'Valor');
+
 // Trata a entrada do usuário
 function handleInput(event: InputEvent) {
     const target = event.target as HTMLInputElement;
@@ -73,13 +80,27 @@ function handleInput(event: InputEvent) {
     formattedValue.value = target.value;
 }
 
-// Watcher para sincronizar com o pai e emitir o valor limpo
+// Watcher para sincronizar mudanças no v-model do pai
 watch(
-    numericValue,
+    () => numericValue.value,
     (newValue) => {
-        emit('update:modelValue', formattedValue.value); // Emite o valor formatado
-        emit('clean-value', newValue); // Emite o valor limpo (número bruto) para o pai
+        emit('update:modelValue', newValue); // Emite o valor limpo (número bruto)
+        emit('clean-value', newValue); // Emite o valor limpo para o pai
+    }
+);
+
+// Watcher para detectar alterações no v-model vindo do pai (ex. preenchido pela API)
+watch(
+    () => props.modelValue,
+    (newValue) => {
+        if (typeof newValue === 'string') {
+            // Remove pontos do valor antes de processar
+            const cleanedValue = newValue.replace(/\./g, '');
+            numericValue.value = cleanedValue ? parseFloat(cleanedValue) : null;
+        } else {
+            numericValue.value = newValue; // Atualiza diretamente se for numérico
+        }
     },
-    { immediate: true }
+    { immediate: true } // Garante a execução inicial
 );
 </script>
