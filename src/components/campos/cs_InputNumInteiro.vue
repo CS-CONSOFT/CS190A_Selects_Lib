@@ -6,9 +6,9 @@
         :clearable="props.Prm_limpavel"
         color="primary"
         :rules="validationRules"
-        :maxlength="9"
         ref="inputRef"
-        @input="onInput"
+        type="text"
+        @input="limitInput"
     >
         <template v-slot:label>
             <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.2em; color: #808080">
@@ -28,14 +28,12 @@ const props = defineProps<{
     Prm_isObrigatorio: boolean;
 }>();
 
-// Definindo o modelo como string para capturar a entrada de texto
+// Modelo definido como string para capturar a entrada
 const modelo = ref<string>('');
 
-// Função para permitir apenas números inteiros
-const onInput = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    // Mantém apenas números inteiros na entrada
-    modelo.value = input.value.replace(/\D/g, '');
+// Limita a entrada a 9 caracteres numéricos
+const limitInput = () => {
+    modelo.value = modelo.value.replace(/\D/g, '').slice(0, 9);
 };
 
 // Regras de validação
