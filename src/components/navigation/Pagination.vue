@@ -5,7 +5,13 @@
             <v-select v-model="localItemsPerPage" label="Itens por página" :items="[5, 10, 15, 25, 50]" hide-details />
         </v-col>
         <v-col class="d-flex justify-center" cols="8">
-            <v-pagination v-model="localCurrentPage" :length="totalPages" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" />
+            <v-pagination
+                v-model="localCurrentPage"
+                :length="totalPages"
+                next-icon="mdi-menu-right"
+                prev-icon="mdi-menu-left"
+                :total-visible="12"
+            />
         </v-col>
         <v-col cols="2" class="d-flex justify-end pr-4">
             <p>{{ startItem }} a {{ endItem }} de {{ totalItems }} registros</p>
