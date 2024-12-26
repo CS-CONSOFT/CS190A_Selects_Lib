@@ -10,7 +10,7 @@
                 :length="totalPages"
                 next-icon="mdi-menu-right"
                 prev-icon="mdi-menu-left"
-                :total-visible="12"
+                :total-visible="14"
             />
         </v-col>
         <v-col cols="2" class="d-flex justify-end pr-4">
