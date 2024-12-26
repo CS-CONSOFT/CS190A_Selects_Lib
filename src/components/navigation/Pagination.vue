@@ -1,62 +1,73 @@
 <template>
-    <!-- Quando a API retornar o total de itens, vai ser exibido a primeira versão -->
-    <v-row v-if="totalItems && totalItems > 0" class="d-flex align-center">
-        <v-col cols="3" class="d-flex justify-start">
-            <p>{{ startItem }} a {{ endItem }} de {{ totalItems }} registros</p>
+    <!-- Exibição de paginação com itens por página -->
+    <v-row v-if="totalItems && totalItems > 0" class="d-flex align-center py-2 px-4">
+        <v-col cols="2" class="d-flex justify-center">
+            <v-select v-model="localItemsPerPage" label="Itens por página" :items="[5, 10, 15, 25, 50]" hide-details />
         </v-col>
-        <v-col class="d-flex justify-start" cols="9">
-            <v-pagination
-                v-model="localCurrentPage"
-                :length="totalPages"
-                next-icon="mdi-menu-right"
-                prev-icon="mdi-menu-left"
-                @input="pageChanged"
-            ></v-pagination>
+        <v-col class="d-flex justify-center" cols="8">
+            <v-pagination v-model="localCurrentPage" :length="totalPages" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" />
+        </v-col>
+        <v-col cols="2" class="d-flex justify-end pr-4">
+            <p>{{ startItem }} a {{ endItem }} de {{ totalItems }} registros</p>
         </v-col>
     </v-row>
 
-    <!-- Quando não houver total de itens, vai ser esta segunda versão -->
+    <!-- Exibição de paginação sem totalItems -->
     <v-row v-else class="d-flex align-center">
-        <v-col class="text-center" cols="12">
-            <v-pagination
-                v-model="localCurrentPage"
-                :length="totalPages"
-                next-icon="mdi-menu-right"
-                prev-icon="mdi-menu-left"
-                @input="pageChanged"
-            ></v-pagination>
+        <v-col cols="8" class="text-center">
+            <v-pagination v-model="localCurrentPage" :length="totalPages" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" />
         </v-col>
     </v-row>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
-const props = defineProps<{
-    currentPage: number;
-    totalPages: number;
-    itemsPerPage: number;
-    totalItems?: number;
-}>();
-
-const emit = defineEmits<{
-    (event: 'update:currentPage', value: number): void;
-}>();
-
-// Garantir que currentPage está sempre sincronizada com o localCurrentPage
-const localCurrentPage = computed({
-    get: () => props.currentPage,
-    set: (value: number) => emit('update:currentPage', value)
+// Props recebidas
+const props = defineProps({
+    currentPage: { type: Number, required: true },
+    totalItems: { type: Number, required: true },
+    itemsPerPage: { type: Number, required: true }
 });
 
-// Usar totalItems com verificação de fallback para 0
-const startItem = computed(() => (props.currentPage - 1) * props.itemsPerPage + 1);
+// Emissão de eventos
+const emit = defineEmits<{
+    (event: 'update:currentPage', value: number): void;
+    (event: 'update:itemsPerPage', value: number): void;
+}>();
 
-// Garantir que endItem não exceda totalItems, com fallback para 0
-const endItem = computed(() => Math.min(props.currentPage * props.itemsPerPage, props.totalItems || 0));
+// Reatividade
+const localItemsPerPage = ref(props.itemsPerPage);
+const localCurrentPage = ref(props.currentPage);
 
-// Emitir a mudança de página
-function pageChanged(page: number) {
-    emit('update:currentPage', page);
-}
+// Cálculo de totalPages
+const totalPages = computed(() => {
+    // Se totalItems for maior que zero, calcula as páginas
+    return props.totalItems > 0 ? Math.max(1, Math.ceil(props.totalItems / localItemsPerPage.value)) : 0;
+});
+
+// Atualizar currentPage se totalPages mudar
+watch(totalPages, (newTotalPages) => {
+    // Se a página atual for maior que o número de páginas disponíveis, ajuste para a última página
+    if (localCurrentPage.value > newTotalPages) {
+        localCurrentPage.value = newTotalPages || 1;
+    }
+});
+
+// Atualizar props ao mudar localItemsPerPage ou localCurrentPage
+watch(localItemsPerPage, (newItemsPerPage) => {
+    emit('update:itemsPerPage', newItemsPerPage);
+});
+
+watch(localCurrentPage, (newCurrentPage) => {
+    emit('update:currentPage', newCurrentPage);
+});
+
+// Calcular itens exibidos
+const startItem = computed(() => {
+    return props.totalItems > 0 ? (localCurrentPage.value - 1) * localItemsPerPage.value + 1 : 0;
+});
+const endItem = computed(() => {
+    return props.totalItems > 0 ? Math.min(localCurrentPage.value * localItemsPerPage.value, props.totalItems) : 0;
+});
 </script>
