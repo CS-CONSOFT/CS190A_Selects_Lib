@@ -1,6 +1,6 @@
 <template>
-    <v-row class="d-flex justify-space-between">
-        <v-col cols="11">
+    <v-row>
+        <v-col cols="12" class="d-flex">
             <v-text-field
                 v-model="cep"
                 label="CEP"
@@ -18,8 +18,7 @@
                     </span>
                 </template>
             </v-text-field>
-        </v-col>
-        <v-col cols="1">
+
             <v-btn class="v-btn-icon ml-4" icon="mdi-magnify" @click="onInput"></v-btn>
         </v-col>
     </v-row>
