@@ -10,7 +10,7 @@
                 :length="totalPages"
                 next-icon="mdi-menu-right"
                 prev-icon="mdi-menu-left"
-                :total-visible="14"
+                :total-visible="10"
             />
         </v-col>
         <v-col cols="2" class="d-flex justify-end pr-4">
@@ -21,7 +21,13 @@
     <!-- Exibição de paginação sem totalItems -->
     <v-row v-else class="d-flex align-center">
         <v-col cols="8" class="text-center">
-            <v-pagination v-model="localCurrentPage" :length="totalPages" next-icon="mdi-menu-right" prev-icon="mdi-menu-left" />
+            <v-pagination
+                v-model="localCurrentPage"
+                :length="totalPages"
+                next-icon="mdi-menu-right"
+                prev-icon="mdi-menu-left"
+                :total-visible="10"
+            />
         </v-col>
     </v-row>
 </template>
