@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTipoCondicao"
-        :items="formattedTipo"
+        :items="tipo"
         :rules="props.rules"
         item-value="value"
         item-text="title"
@@ -18,11 +18,11 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
-import type { Csicp_bb008_tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
+import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
+import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{
@@ -31,31 +31,25 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const tipo = ref<Csicp_bb008_tipo[]>([]);
-const internalSelectedTipoCondicao = ref<number | null>(null);
+const tipo = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTipoCondicao = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
-const formattedTipo = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tipo.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchTpCondiPagamento = async () => {
     try {
-        const response = await GetListEstaticasBB();
+        const response = await getEstaticasBB(StaticTypeBB.CSICP_BB008_TIPO);
+
         if (response.status === 200) {
-            tipo.value = response.data.csicp_bb008_tipo;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tipo.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTipoCondicao.value) {
-                const selected = tipo.value.find((tipo) => tipo.Id === internalSelectedTipoCondicao.value);
+                const selected = tipo.value.find((tipo) => tipo.value === internalSelectedTipoCondicao.value);
                 if (selected) {
-                    internalSelectedTipoCondicao.value = selected.Id;
+                    internalSelectedTipoCondicao.value = selected.value;
                 }
             }
         } else {

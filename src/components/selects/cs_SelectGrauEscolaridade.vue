@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedEscolaridade"
-        :items="formattedEscolaridade"
+        :items="escolaridade"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb01202_Esc } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const escolaridade = ref<Csicp_bb01202_Esc[]>([]);
-const internalSelectedEscolaridade = ref<number | null>(null);
+const escolaridade = ref<{ title: string; value: string }[]>([]);
+const internalSelectedEscolaridade = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um grau de escolaridade');
 
-const formattedEscolaridade = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...escolaridade.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchEscolaridade = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_ESC);
         if (response.status === 200) {
-            escolaridade.value = response.data.csicp_bb01202_Esc;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            escolaridade.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedEscolaridade.value) {
-                const selected = escolaridade.value.find((escolaridade) => escolaridade.Id === internalSelectedEscolaridade.value);
+                const selected = escolaridade.value.find((escolaridade) => escolaridade.value === internalSelectedEscolaridade.value);
                 if (selected) {
-                    internalSelectedEscolaridade.value = selected.Id;
+                    internalSelectedEscolaridade.value = selected.value;
                 }
             }
         } else {

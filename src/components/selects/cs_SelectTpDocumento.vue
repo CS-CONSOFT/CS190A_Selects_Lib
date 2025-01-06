@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTpDocumento"
-        :items="formattedTpDocumento"
+        :items="tipoDocumento"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,39 +19,33 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012mdc } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoDocumento = ref<Csicp_bb012mdc[]>([]);
-const internalSelectedTpDocumento = ref<number | null>(null);
+const tipoDocumento = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTpDocumento = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
-const formattedTpDocumento = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tipoDocumento.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchClasse = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        //Alterar para o tipo de estatica correto bb012mdc
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MDC);
         if (response.status === 200) {
-            tipoDocumento.value = response.data.csicp_bb012mdc;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tipoDocumento.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTpDocumento.value) {
-                const selected = tipoDocumento.value.find((documento) => documento.Id === internalSelectedTpDocumento.value);
+                const selected = tipoDocumento.value.find((documento) => documento.value === internalSelectedTpDocumento.value);
                 if (selected) {
-                    internalSelectedTpDocumento.value = selected.Id;
+                    internalSelectedTpDocumento.value = selected.value;
                 }
             }
         } else {

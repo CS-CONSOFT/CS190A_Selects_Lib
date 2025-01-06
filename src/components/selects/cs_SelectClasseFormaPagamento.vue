@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedClasseFormaPagamento"
-        :items="formattedClasseFormaPagamento"
+        :items="classeFormaPagamento"
         :rules="props.rules"
         item-value="value"
         item-text="title"
@@ -18,8 +18,8 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
-import type { Csicp_bb026_Classe } from '../../types/basico/estaticas/BB/bb_estaticas';
+import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
+import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -31,33 +31,24 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const classeFormaPagamento = ref<Csicp_bb026_Classe[]>([]);
+const classeFormaPagamento = ref<{ title: string; value: string }[]>([]);
 const internalSelectedClasseFormaPagamento = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma classe para a forma de pagamento');
 
-const formattedClasseFormaPagamento = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...classeFormaPagamento.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchClasseFormaPagamento = async () => {
     try {
-        const response = await GetListEstaticasBB();
+        const response = await getEstaticasBB(StaticTypeBB.CSICP_BB026_CLASSE);
         if (response.status === 200) {
-            classeFormaPagamento.value = response.data.csicp_bb026_Classe;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            classeFormaPagamento.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedClasseFormaPagamento.value) {
-                const selected = classeFormaPagamento.value.find(
-                    (classe) => classe.Id === Number(internalSelectedClasseFormaPagamento.value)
-                );
+                const selected = classeFormaPagamento.value.find((classe) => classe.value === internalSelectedClasseFormaPagamento.value);
                 if (selected) {
-                    internalSelectedClasseFormaPagamento.value = selected.Id.toString();
+                    internalSelectedClasseFormaPagamento.value = selected.value;
                 }
             }
         } else {

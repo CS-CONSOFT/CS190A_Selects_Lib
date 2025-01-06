@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedDomicilio"
-        :items="formattedDomicilio"
+        :items="domicilio"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb01202_Dom } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const domicilio = ref<Csicp_bb01202_Dom[]>([]);
-const internalSelectedDomicilio = ref<number | null>(null);
+const domicilio = ref<{ title: string; value: string }[]>([]);
+const internalSelectedDomicilio = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de domicílio');
 
-const formattedDomicilio = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...domicilio.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchDomicilio = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_DOM);
         if (response.status === 200) {
-            domicilio.value = response.data.csicp_bb01202_Dom;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            domicilio.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedDomicilio.value) {
-                const selected = domicilio.value.find((domicilio) => domicilio.Id === internalSelectedDomicilio.value);
+                const selected = domicilio.value.find((domicilio) => domicilio.value === internalSelectedDomicilio.value);
                 if (selected) {
-                    internalSelectedDomicilio.value = selected.Id;
+                    internalSelectedDomicilio.value = selected.value;
                 }
             }
         } else {

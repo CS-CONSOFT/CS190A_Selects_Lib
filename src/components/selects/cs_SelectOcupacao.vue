@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedOcupacao"
-        :items="formattedOcupacao"
+        :items="ocupacao"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb01202_Ocu } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const ocupacao = ref<Csicp_bb01202_Ocu[]>([]);
-const internalSelectedOcupacao = ref<number | null>(null);
+const ocupacao = ref<{ title: string; value: string }[]>([]);
+const internalSelectedOcupacao = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma ocupação');
 
-const formattedOcupacao = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...ocupacao.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchOcupacao = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_OCU);
         if (response.status === 200) {
-            ocupacao.value = response.data.csicp_bb01202_Ocu;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            ocupacao.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedOcupacao.value) {
-                const selected = ocupacao.value.find((ocupacao) => ocupacao.Id === internalSelectedOcupacao.value);
+                const selected = ocupacao.value.find((ocupacao) => ocupacao.value === internalSelectedOcupacao.value);
                 if (selected) {
-                    internalSelectedOcupacao.value = selected.Id;
+                    internalSelectedOcupacao.value = selected.value;
                 }
             }
         } else {

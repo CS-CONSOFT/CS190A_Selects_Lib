@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedClasse"
-        :items="formattedClasse"
+        :items="classe"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_ClaCta } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const classe = ref<Csicp_bb012_ClaCta[]>([]);
-const internalSelectedClasse = ref<number | null>(null);
+const classe = ref<{ title: string; value: string }[]>([]);
+const internalSelectedClasse = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma classe');
 
-const formattedClasse = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...classe.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchClasse = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_CLACTA);
         if (response.status === 200) {
-            classe.value = response.data.csicp_bb012_ClaCta;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            classe.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedClasse.value) {
-                const selected = classe.value.find((classe) => classe.Id === internalSelectedClasse.value);
+                const selected = classe.value.find((classe) => classe.value === internalSelectedClasse.value);
                 if (selected) {
-                    internalSelectedClasse.value = selected.Id;
+                    internalSelectedClasse.value = selected.value;
                 }
             }
         } else {

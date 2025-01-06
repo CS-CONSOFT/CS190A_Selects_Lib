@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedVinFormaPagamento"
-        :items="formattedVinFormaPagamento"
+        :items="vinFormaPagamento"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -17,39 +17,32 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
-import type { Csicp_bb026_Vin } from '../../types/basico/estaticas/BB/bb_estaticas';
+import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
+import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const vinFormaPagamento = ref<Csicp_bb026_Vin[]>([]);
-const internalSelectedVinFormaPagamento = ref<number | null>(null);
+const vinFormaPagamento = ref<{ title: string; value: string }[]>([]);
+const internalSelectedVinFormaPagamento = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de vínculo');
 
-const formattedVinFormaPagamento = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...vinFormaPagamento.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchVinFormaPagamento = async () => {
     try {
-        const response = await GetListEstaticasBB();
+        const response = await getEstaticasBB(StaticTypeBB.CSICP_BB026_VIN);
         if (response.status === 200) {
-            vinFormaPagamento.value = response.data.csicp_bb026_Vin;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            vinFormaPagamento.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedVinFormaPagamento.value) {
-                const selected = vinFormaPagamento.value.find((vinculo) => vinculo.Id === internalSelectedVinFormaPagamento.value);
+                const selected = vinFormaPagamento.value.find((vinculo) => vinculo.value === internalSelectedVinFormaPagamento.value);
                 if (selected) {
-                    internalSelectedVinFormaPagamento.value = selected.Id;
+                    internalSelectedVinFormaPagamento.value = selected.value;
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedGrupo"
-        :items="formattedGrupo"
+        :items="grupo"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_GruCta } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const grupo = ref<Csicp_bb012_GruCta[]>([]);
-const internalSelectedGrupo = ref<number | null>(null);
+const grupo = ref<{ title: string; value: string }[]>([]);
+const internalSelectedGrupo = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um grupo');
 
-const formattedGrupo = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...grupo.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchGrupo = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_GRUCTA);
         if (response.status === 200) {
-            grupo.value = response.data.csicp_bb012_GruCta;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            grupo.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedGrupo.value) {
-                const selected = grupo.value.find((grupo) => grupo.Id === internalSelectedGrupo.value);
+                const selected = grupo.value.find((grupo) => grupo.value === internalSelectedGrupo.value);
                 if (selected) {
-                    internalSelectedGrupo.value = selected.Id;
+                    internalSelectedGrupo.value = selected.value;
                 }
             }
         } else {

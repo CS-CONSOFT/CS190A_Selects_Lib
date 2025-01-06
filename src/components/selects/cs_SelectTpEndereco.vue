@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTpEndereco"
-        :items="formattedTpEndereco"
+        :items="tipoEndereco"
         :rules="props.rules"
         item-value="value"
         item-text="title"
@@ -18,11 +18,11 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012j_TpEnd } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{
@@ -31,31 +31,24 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const tipoEndereco = ref<Csicp_bb012j_TpEnd[]>([]);
-const internalSelectedTpEndereco = ref<number | null>(null);
+const tipoEndereco = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTpEndereco = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de endereço');
 
-const formattedTpEndereco = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tipoEndereco.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchTipoEndereco = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012J_TPEND);
         if (response.status === 200) {
-            tipoEndereco.value = response.data.csicp_bb012j_TpEnd;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tipoEndereco.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTpEndereco.value) {
-                const selected = tipoEndereco.value.find((endereco) => endereco.Id === internalSelectedTpEndereco.value);
+                const selected = tipoEndereco.value.find((endereco) => endereco.value === internalSelectedTpEndereco.value);
                 if (selected) {
-                    internalSelectedTpEndereco.value = selected.Id;
+                    internalSelectedTpEndereco.value = selected.value;
                 }
             }
         } else {

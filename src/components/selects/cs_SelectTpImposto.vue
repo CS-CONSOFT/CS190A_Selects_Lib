@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTpImposto"
-        :items="formattedTpImposto"
+        :items="tipoImposto"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -15,41 +15,37 @@
         </template>
     </v-select>
 </template>
+
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasAA } from '../../services/estaticas/estaticas_aa';
-import type { Csicp_aa037_Imp } from '../../types/estaticas/AA/aa_Estaticas';
+import { getEstaticasAA } from '@/services/estaticasNovas/aa_Estaticas';
+import { StaticTypeAA } from '@/utils/enums/staticTypeAA';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoImposto = ref<Csicp_aa037_Imp[]>([]);
-const internalSelectedTpImposto = ref<number | null>(null);
+const tipoImposto = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTpImposto = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de imposto');
 
-const formattedTpImposto = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tipoImposto.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
+// Função para buscar os tipos de imposto
 const fetchTipoImposto = async () => {
     try {
-        const response = await getListEstaticasAA();
+        const response = await getEstaticasAA(StaticTypeAA.CSICP_AA037_Imps);
+
         if (response.status === 200) {
-            tipoImposto.value = response.data.csicp_aa037_Imp;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tipoImposto.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTpImposto.value) {
-                const selected = tipoImposto.value.find((imposto) => imposto.Id === internalSelectedTpImposto.value);
+                const selected = tipoImposto.value.find((imposto) => imposto.value === internalSelectedTpImposto.value);
                 if (selected) {
-                    internalSelectedTpImposto.value = selected.Id;
+                    internalSelectedTpImposto.value = selected.value;
                 }
             }
         } else {
@@ -60,14 +56,17 @@ const fetchTipoImposto = async () => {
     }
 };
 
+// Chama a busca de dados na montagem do componente
 onMounted(async () => {
     await fetchTipoImposto();
 });
 
+// Emite o valor selecionado sempre que ele muda
 watch(internalSelectedTpImposto, (newVal) => {
     emit('update:modelValue', newVal);
 });
 
+// Função para emitir o valor ao selecionar no dropdown
 function emitSelection() {
     emit('update:modelValue', internalSelectedTpImposto.value);
 }

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedEmpresa"
-        :items="formattedEmpresa"
+        :items="empresa"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_GruCta } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const empresa = ref<Csicp_bb012_GruCta[]>([]);
-const internalSelectedEmpresa = ref<number | null>(null);
+const empresa = ref<{ title: string; value: string }[]>([]);
+const internalSelectedEmpresa = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione o tipo de empresa');
 
-const formattedEmpresa = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...empresa.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchEmpresa = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_GRUCTA);
         if (response.status === 200) {
-            empresa.value = response.data.csicp_bb012_GruCta;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            empresa.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedEmpresa.value) {
-                const selected = empresa.value.find((empresa) => empresa.Id === internalSelectedEmpresa.value);
+                const selected = empresa.value.find((empresa) => empresa.value === internalSelectedEmpresa.value);
                 if (selected) {
-                    internalSelectedEmpresa.value = selected.Id;
+                    internalSelectedEmpresa.value = selected.value;
                 }
             }
         } else {

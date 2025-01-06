@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedModalidade"
-        :items="formattedModalidades"
+        :items="modRelacao"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_MRel } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const modRelacao = ref<Csicp_bb012_MRel[]>([]);
-const internalSelectedModalidade = ref<number | null>(null);
+const modRelacao = ref<{ title: string; value: string }[]>([]);
+const internalSelectedModalidade = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma modalidade');
 
-const formattedModalidades = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...modRelacao.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchModalidades = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
         if (response.status === 200) {
-            modRelacao.value = response.data.csicp_bb012_MRel;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            modRelacao.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedModalidade.value) {
-                const selected = modRelacao.value.find((modalidade) => modalidade.Id === internalSelectedModalidade.value);
+                const selected = modRelacao.value.find((modalidade) => modalidade.value === internalSelectedModalidade.value);
                 if (selected) {
-                    internalSelectedModalidade.value = selected.Id;
+                    internalSelectedModalidade.value = selected.value;
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedSexo"
-        :items="formattedSexo"
+        :items="sexo"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb01202_Sex } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const sexo = ref<Csicp_bb01202_Sex[]>([]);
-const internalSelectedSexo = ref<number | null>(null);
+const sexo = ref<{ title: string; value: string }[]>([]);
+const internalSelectedSexo = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um sexo');
 
-const formattedSexo = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...sexo.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchSexo = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_SEX);
         if (response.status === 200) {
-            sexo.value = response.data.csicp_bb01202_Sex;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            sexo.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedSexo.value) {
-                const selected = sexo.value.find((sexo) => sexo.Id === internalSelectedSexo.value);
+                const selected = sexo.value.find((sexo) => sexo.value === internalSelectedSexo.value);
                 if (selected) {
-                    internalSelectedSexo.value = selected.Id;
+                    internalSelectedSexo.value = selected.value;
                 }
             }
         } else {

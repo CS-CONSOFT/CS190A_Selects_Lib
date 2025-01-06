@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedStatus"
-        :items="formattedStatus"
+        :items="status"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012_StaCta } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const status = ref<Csicp_bb012_StaCta[]>([]);
-const internalSelectedStatus = ref<number | null>(null);
+const status = ref<{ title: string; value: string }[]>([]);
+const internalSelectedStatus = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um status');
 
-const formattedStatus = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...status.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchStatus = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_STACTA);
         if (response.status === 200) {
-            status.value = response.data.csicp_bb012_StaCta;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            status.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedStatus.value) {
-                const selected = status.value.find((status) => status.Id === internalSelectedStatus.value);
+                const selected = status.value.find((status) => status.value === internalSelectedStatus.value);
                 if (selected) {
-                    internalSelectedStatus.value = selected.Id;
+                    internalSelectedStatus.value = selected.value;
                 }
             }
         } else {

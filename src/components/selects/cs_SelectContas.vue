@@ -11,11 +11,11 @@
         loading-text="Carregando dados..."
         @change="emitSelection"
         :menu-props="{ offsetY: true, width: '70%' }"
-        content-class="custom-select-menu"
     >
         <template v-slot:prepend-item>
             <v-row class="sticky-search-field pa-0">
                 <v-text-field
+                    class="pa-2"
                     v-model="search"
                     prepend-inner-icon="mdi-magnify"
                     label="Pesquisar"
@@ -23,10 +23,9 @@
                     variant="solo-filled"
                     hide-details
                     clearable
+                    style="margin-bottom: 5px"
                 />
             </v-row>
-
-            <v-divider class="mt-2"></v-divider>
         </template>
         <template v-slot:no-data>
             <p>Nenhum dado encontrado.</p>
@@ -46,9 +45,9 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
-import type { Csicp_bb012_MRel, EstaticasBB012 } from '../../types/estaticas/BB/bb012_Estaticas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -94,15 +93,15 @@ const filteredContas = computed(() => {
 const fetchContas = async () => {
     loading.value = true;
     try {
-        const response = await GetListEstaticasBB012();
-        const estaticasBB012: EstaticasBB012 = response.data;
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
+        const estaticasBB012 = response.data as unknown as Record<string, { Id: string }>;
 
         let labelToSearch = props.modRelacao === 1 ? 'Cliente' : 'Fornecedor';
 
-        const relacaoFiltrada = estaticasBB012.csicp_bb012_MRel.find((item: Csicp_bb012_MRel) => item.Label === labelToSearch);
+        const relacaoFiltrada = estaticasBB012[labelToSearch];
 
         if (relacaoFiltrada) {
-            const responseContas = await getListContasCombo(tenant, relacaoFiltrada.Id);
+            const responseContas = await getListContasCombo(tenant, Number(relacaoFiltrada.Id));
             if (responseContas.status === 200) {
                 contas.value = responseContas.data.csicp_bb012;
                 if (selectedConta.value) {

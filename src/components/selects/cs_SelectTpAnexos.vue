@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedAnexos"
-        :items="formattedAnexo"
+        :items="anexo"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,33 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb012mtd } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const anexo = ref<Csicp_bb012mtd[]>([]);
-const internalSelectedAnexos = ref<number | null>(null);
+const anexo = ref<{ title: string; value: string }[]>([]);
+const internalSelectedAnexos = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
-const formattedAnexo = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...anexo.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchClasse = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        //Alterar o StaticType para a tabela bb012mtd
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MTD);
         if (response.status === 200) {
-            anexo.value = response.data.csicp_bb012mtd;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            anexo.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedAnexos.value) {
-                const selected = anexo.value.find((anexo) => anexo.Id === internalSelectedAnexos.value);
+                const selected = anexo.value.find((anexo) => anexo.value === internalSelectedAnexos.value);
                 if (selected) {
-                    internalSelectedAnexos.value = selected.Id;
+                    internalSelectedAnexos.value = selected.value;
                 }
             }
         } else {

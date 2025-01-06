@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTpAdministradora"
-        :items="formattedTpAdministradoras"
+        :items="tipoAdministradoras"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,41 +18,34 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB } from '../../services/estaticas/estaticas_bb';
-import type { Csicp_bb019_Tipo } from '../../types/basico/estaticas/BB/bb_estaticas';
+import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
+import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoAdministradoras = ref<Csicp_bb019_Tipo[]>([]);
-const internalSelectedTpAdministradora = ref<number | null>(null);
+const tipoAdministradoras = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTpAdministradora = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de administradora');
 
-const formattedTpAdministradoras = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tipoAdministradoras.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchTipoAdministradoras = async () => {
     try {
-        const response = await GetListEstaticasBB();
+        const response = await getEstaticasBB(StaticTypeBB.CSICP_BB019_TIPO);
         if (response.status === 200) {
-            tipoAdministradoras.value = response.data.csicp_bb019_Tipo;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tipoAdministradoras.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTpAdministradora.value) {
                 const selected = tipoAdministradoras.value.find(
-                    (administradora) => administradora.Id === internalSelectedTpAdministradora.value
+                    (administradora) => administradora.value === internalSelectedTpAdministradora.value
                 );
                 if (selected) {
-                    internalSelectedTpAdministradora.value = selected.Id;
+                    internalSelectedTpAdministradora.value = selected.value;
                 }
             }
         } else {

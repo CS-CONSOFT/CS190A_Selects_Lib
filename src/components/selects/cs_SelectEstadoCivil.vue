@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedEstadoCivil"
-        :items="formattedEstadoCivil"
+        :items="estadoCivil"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,39 +18,32 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasBB012 } from '../../services/estaticas/estaticas_bb012';
-import type { Csicp_bb01202_ECiv } from '../../types/estaticas/BB/bb012_Estaticas';
+import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
+import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const estadoCivil = ref<Csicp_bb01202_ECiv[]>([]);
-const internalSelectedEstadoCivil = ref<number | null>(null);
+const estadoCivil = ref<{ title: string; value: string }[]>([]);
+const internalSelectedEstadoCivil = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um estado civil');
 
-const formattedEstadoCivil = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...estadoCivil.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchEstadoCivil = async () => {
     try {
-        const response = await GetListEstaticasBB012();
+        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_ECIV);
         if (response.status === 200) {
-            estadoCivil.value = response.data.csicp_bb01202_ECiv;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            estadoCivil.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedEstadoCivil.value) {
-                const selected = estadoCivil.value.find((estadoCivil) => estadoCivil.Id === internalSelectedEstadoCivil.value);
+                const selected = estadoCivil.value.find((estadoCivil) => estadoCivil.value === internalSelectedEstadoCivil.value);
                 if (selected) {
-                    internalSelectedEstadoCivil.value = selected.Id;
+                    internalSelectedEstadoCivil.value = selected.value;
                 }
             }
         } else {
