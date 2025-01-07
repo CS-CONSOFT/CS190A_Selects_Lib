@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const modRelacao = ref<{ title: string; value: string }[]>([]);
-const internalSelectedModalidade = ref<number | null>(null);
+const internalSelectedModalidade = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma modalidade');
 
@@ -41,9 +41,9 @@ const fetchModalidades = async () => {
             modRelacao.value = [{ title: '', value: '0' }, ...fetchedData];
 
             if (internalSelectedModalidade.value) {
-                const selected = modRelacao.value.find((modalidade) => Number(modalidade.value) === internalSelectedModalidade.value);
+                const selected = modRelacao.value.find((modalidade) => modalidade.value === internalSelectedModalidade.value);
                 if (selected) {
-                    internalSelectedModalidade.value = Number(selected.value);
+                    internalSelectedModalidade.value = selected.value;
                 }
             }
         } else {
