@@ -45,8 +45,8 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
-import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
-import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
+import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
+import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
 
 const emit = defineEmits<{

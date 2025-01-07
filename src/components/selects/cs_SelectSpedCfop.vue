@@ -35,8 +35,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getEstaticasSPED } from '@/services/estaticasNovas/Sped_Estaticas';
-import { StaticTypeSPED } from '@/utils/enums/staticTypeSPED';
+import { getEstaticasSPED } from '../../services/estaticas/Sped_Estaticas';
+import { StaticTypeSPED } from '../../utils/enums/staticTypeSPED';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

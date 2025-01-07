@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getEstaticasAA } from '@/services/estaticasNovas/aa_Estaticas';
-import { StaticTypeAA } from '@/utils/enums/staticTypeAA';
+import { getEstaticasAA } from '../../services/estaticas/aa_Estaticas';
+import { StaticTypeAA } from '../../utils/enums/staticTypeAA';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

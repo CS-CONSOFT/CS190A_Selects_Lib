@@ -18,8 +18,8 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
-import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
+import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
+import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

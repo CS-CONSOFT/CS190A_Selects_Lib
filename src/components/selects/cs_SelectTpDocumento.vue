@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getEstaticasBB012 } from '@/services/estaticasNovas/bb012_Estaticas';
-import { StaticTypesBB012 } from '@/utils/enums/staticTypesBB012';
+import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
+import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
