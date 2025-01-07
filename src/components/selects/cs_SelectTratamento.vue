@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedTratamento"
-        :items="formattedTratamento"
+        :items="tratamento"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -17,39 +17,32 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { GetListEstaticasCRM } from '../../services/estaticas/estaticas_crm';
-import type { Csicp_bb035_Trat } from '../../types/estaticas/CRM/crm_estaticas';
+import { getEstaticasBB } from '@/services/estaticasNovas/bb_Estaticas';
+import { StaticTypeBB } from '@/utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tratamento = ref<Csicp_bb035_Trat[]>([]);
-const internalSelectedTratamento = ref<number | null>(null);
+const tratamento = ref<{ title: string; value: string }[]>([]);
+const internalSelectedTratamento = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tratamento');
 
-const formattedTratamento = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...tratamento.value.map((item) => ({
-            title: item.Label,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchTratamento = async () => {
     try {
-        const response = await GetListEstaticasCRM();
+        const response = await getEstaticasBB(StaticTypeBB.CSICP_BB035_TRAT);
         if (response.status === 200) {
-            tratamento.value = response.data.csicp_bb035_Trat;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            tratamento.value = [{ title: '', value: '0' }, ...fetchedData];
+
             if (internalSelectedTratamento.value) {
-                const selected = tratamento.value.find((tratamento) => tratamento.Id === internalSelectedTratamento.value);
+                const selected = tratamento.value.find((tratamento) => tratamento.value === internalSelectedTratamento.value);
                 if (selected) {
-                    internalSelectedTratamento.value = selected.Id;
+                    internalSelectedTratamento.value = selected.value;
                 }
             }
         } else {

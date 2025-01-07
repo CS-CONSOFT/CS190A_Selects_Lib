@@ -7,13 +7,12 @@
         variant="solo-filled"
         hide-details
         @change="emitSelection"
-        return-object
-        :menu-props="{ offsetY: true, width: '70%' }"
-        content-class="custom-select-menu"
+        :menu-props="{ offsetY: true, width: '40%' }"
     >
         <template v-slot:prepend-item>
             <v-row class="sticky-search-field pa-0">
                 <v-text-field
+                    class="pa-2"
                     v-model="search"
                     prepend-inner-icon="mdi-magnify"
                     label="Pesquisar"
@@ -21,10 +20,9 @@
                     variant="solo-filled"
                     hide-details
                     clearable
+                    style="margin-bottom: 5px"
                 />
             </v-row>
-
-            <v-divider class="mt-2"></v-divider>
         </template>
 
         <template v-slot:label>
@@ -37,50 +35,41 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasSpedCFOP } from '../../services/estaticas/sped_cfop';
-import type { SpedInCFOP } from '../../types/basico/estaticas/SPED/sped_in_cfop_estaticas';
+import { getEstaticasSPED } from '@/services/estaticasNovas/Sped_Estaticas';
+import { StaticTypeSPED } from '@/utils/enums/staticTypeSPED';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const cfops = ref<SpedInCFOP[]>([]);
-const internalSelectedCFOP = ref<number | null>(null);
+const cfops = ref<{ title: string; value: string }[]>([]);
+const internalSelectedCFOP = ref<string | null>(null);
 const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um código CFOP');
 
 const filteredCfop = computed(() => {
+    const cfopsComItemVazio = [{ title: '', value: '0' }, ...cfops.value];
+
     if (!search.value) {
-        return [
-            { title: '', value: 0 },
-            ...cfops.value.map((item) => ({
-                title: `${item.Codigo} - ${item.Descricao}`,
-                value: item.Id
-            }))
-        ];
+        return cfopsComItemVazio;
     }
 
     const searchText = search.value.toLowerCase();
-    return cfops.value
-        .filter((item) => item.Codigo.toLowerCase().includes(searchText) || item.Descricao.toLowerCase().includes(searchText))
-        .map((item) => ({
-            title: `${item.Codigo} - ${item.Descricao}`,
-            value: item.Id
-        }));
+    return cfopsComItemVazio.filter((item) => item.title.toLowerCase().includes(searchText));
 });
 
 const fetchCfop = async () => {
     try {
-        const response = await getListEstaticasSpedCFOP();
+        const response = await getEstaticasSPED(StaticTypeSPED.SpedInCfop);
         if (response.status === 200) {
-            cfops.value = response.data.sped_in_CFOP;
+            cfops.value = response.data as unknown as { title: string; value: string }[];
             if (internalSelectedCFOP.value) {
-                const selected = cfops.value.find((cfop) => cfop.Id === internalSelectedCFOP.value);
+                const selected = cfops.value.find((cfop) => cfop.value === internalSelectedCFOP.value);
                 if (selected) {
-                    internalSelectedCFOP.value = selected.Id;
+                    internalSelectedCFOP.value = selected.value;
                 }
             }
         } else {

@@ -19,10 +19,10 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
 import { URLBase } from '../../services/configuracoes_axios';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import axios from 'axios';
-import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     selectedItem: string | null;

@@ -1,4 +1,4 @@
-import { URLBase } from '../../services/configuracoes_axios';
+import { URLBase } from '../configuracoes_axios';
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type { EstaticasFF } from '../../types/basico/estaticas/FF/ff_estaticas';

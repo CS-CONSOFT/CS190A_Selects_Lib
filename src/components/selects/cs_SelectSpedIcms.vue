@@ -8,10 +8,22 @@
         variant="solo-filled"
         hide-details
         @change="emitSelection"
-        :menu-props="{ offsetY: true, width: '70%' }"
+        :menu-props="{ offsetY: true, width: '40%' }"
     >
         <template v-slot:prepend-item>
-            <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" label="Pesquisar" single-line hide-details clearable />
+            <v-row class="sticky-search-field pa-0">
+                <v-text-field
+                    class="pa-2"
+                    v-model="search"
+                    prepend-inner-icon="mdi-magnify"
+                    label="Pesquisar"
+                    single-line
+                    variant="solo-filled"
+                    hide-details
+                    clearable
+                    style="margin-bottom: 5px"
+                />
+            </v-row>
         </template>
 
         <template v-slot:label>
@@ -24,11 +36,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getListEstaticasSpedICMS } from '../../services/estaticas/sped_icms';
-import type { SpedInICMS } from '../../types/basico/estaticas/SPED/sped_in_icms_estaticas';
+import { getEstaticasSPED } from '@/services/estaticasNovas/Sped_Estaticas';
+import { StaticTypeSPED } from '@/utils/enums/staticTypeSPED';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{
@@ -37,42 +49,33 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const documentos = ref<SpedInICMS[]>([]);
-const internalSelectedDocumento = ref<number | null>(null);
+const documentos = ref<{ title: string; value: string }[]>([]);
+const internalSelectedDocumento = ref<string | null>(null);
 const search = ref<string>('');
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um modelo de documento');
 
 const filteredDoc = computed(() => {
+    const docsComItemVazio = [{ title: '', value: '0' }, ...documentos.value];
+
     if (!search.value) {
-        return [
-            { title: '', value: '' },
-            ...documentos.value.map((item) => ({
-                title: `${item.Label}`,
-                value: item.Id
-            }))
-        ];
+        return docsComItemVazio;
     }
 
     const searchText = search.value.toLowerCase();
-    return documentos.value
-        .filter((item) => item.Codigo.toLowerCase().includes(searchText) || item.Label.toLowerCase().includes(searchText))
-        .map((item) => ({
-            title: `${item.Label}`,
-            value: item.Id
-        }));
+    return docsComItemVazio.filter((item) => item.title.toLowerCase().includes(searchText));
 });
 
 const fetchDocumentosFiscais = async () => {
     try {
-        const response = await getListEstaticasSpedICMS();
+        const response = await getEstaticasSPED(StaticTypeSPED.SpedInDocIcm);
         if (response.status === 200) {
-            documentos.value = response.data.sped_in_doc_ICMS;
+            documentos.value = response.data as unknown as { title: string; value: string }[];
             if (internalSelectedDocumento.value) {
-                const selected = documentos.value.find((documento) => documento.Id === internalSelectedDocumento.value);
+                const selected = documentos.value.find((documento) => documento.value === internalSelectedDocumento.value);
                 if (selected) {
-                    internalSelectedDocumento.value = selected.Id;
+                    internalSelectedDocumento.value = selected.value;
                 }
             }
         } else {
