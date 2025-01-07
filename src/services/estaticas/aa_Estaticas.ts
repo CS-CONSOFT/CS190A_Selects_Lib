@@ -1,8 +1,8 @@
-import { NewURLBase } from '../../services/configuracoes_axios';
 import axios from 'axios';
-import { StaticTypeAA } from '@/utils/enums/staticTypeAA';
+import { NewURLBase } from '../../services/configuracoes_axios';
+import { StaticTypeAA } from '../../utils/enums/staticTypeAA';
 import type { AxiosResponse } from 'axios';
-import type { EstaticasAA } from '@/types/estaticasNovas/AA/estaticaTypes_AA';
+import type { EstaticasAA } from '../../types/estaticasNovas/AA/estaticaTypes_AA';
 
 async function getEstaticasAA(staticType: StaticTypeAA): Promise<AxiosResponse<EstaticasAA[]>> {
     try {
