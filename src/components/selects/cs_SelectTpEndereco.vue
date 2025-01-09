@@ -22,7 +22,7 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -31,8 +31,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const tipoEndereco = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTpEndereco = ref<string | null>(null);
+const tipoEndereco = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTpEndereco = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de endereço');
@@ -41,9 +41,9 @@ const fetchTipoEndereco = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012J_TPEND);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipoEndereco.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipoEndereco.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTpEndereco.value) {
                 const selected = tipoEndereco.value.find((endereco) => endereco.value === internalSelectedTpEndereco.value);

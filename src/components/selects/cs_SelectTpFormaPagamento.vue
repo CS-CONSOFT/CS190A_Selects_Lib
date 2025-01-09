@@ -21,13 +21,13 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoFormaPagamento = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTpFormaPagamento = ref<string | null>(null);
+const tipoFormaPagamento = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTpFormaPagamento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo para a forma de pagamento');
 
@@ -35,9 +35,9 @@ const fetchTipoFormaPagamento = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB026_TIPO);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipoFormaPagamento.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipoFormaPagamento.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTpFormaPagamento.value) {
                 const selected = tipoFormaPagamento.value.find((tipo) => tipo.value === internalSelectedTpFormaPagamento.value);

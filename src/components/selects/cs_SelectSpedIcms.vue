@@ -40,7 +40,7 @@ import { getEstaticasSPED } from '../../services/estaticas/Sped_Estaticas';
 import { StaticTypeSPED } from '../../utils/enums/staticTypeSPED';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -49,15 +49,15 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const documentos = ref<{ title: string; value: string }[]>([]);
-const internalSelectedDocumento = ref<string | null>(null);
+const documentos = ref<{ title: string; value: number }[]>([]);
+const internalSelectedDocumento = ref<number | null>(null);
 const search = ref<string>('');
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um modelo de documento');
 
 const filteredDoc = computed(() => {
-    const docsComItemVazio = [{ title: '', value: '0' }, ...documentos.value];
+    const docsComItemVazio = [{ title: '', value: 0 }, ...documentos.value];
 
     if (!search.value) {
         return docsComItemVazio;
@@ -71,7 +71,7 @@ const fetchDocumentosFiscais = async () => {
     try {
         const response = await getEstaticasSPED(StaticTypeSPED.SpedInDocIcm);
         if (response.status === 200) {
-            documentos.value = response.data as unknown as { title: string; value: string }[];
+            documentos.value = response.data as unknown as { title: string; value: number }[];
             if (internalSelectedDocumento.value) {
                 const selected = documentos.value.find((documento) => documento.value === internalSelectedDocumento.value);
                 if (selected) {

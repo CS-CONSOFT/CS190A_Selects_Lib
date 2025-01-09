@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const juros = ref<{ title: string; value: string }[]>([]);
-const internalSelectedJuros = ref<string | null>(null);
+const juros = ref<{ title: string; value: number }[]>([]);
+const internalSelectedJuros = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma situação de juros');
 
@@ -36,9 +36,9 @@ const fetchJuros = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01201_JUR);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            juros.value = [{ title: '', value: '0' }, ...fetchedData];
+            juros.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedJuros.value) {
                 const selected = juros.value.find((juros) => juros.value === internalSelectedJuros.value);

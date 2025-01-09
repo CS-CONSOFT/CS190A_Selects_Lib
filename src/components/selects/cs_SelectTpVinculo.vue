@@ -21,13 +21,13 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const vinFormaPagamento = ref<{ title: string; value: string }[]>([]);
-const internalSelectedVinFormaPagamento = ref<string | null>(null);
+const vinFormaPagamento = ref<{ title: string; value: number }[]>([]);
+const internalSelectedVinFormaPagamento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de vínculo');
 
@@ -35,9 +35,9 @@ const fetchVinFormaPagamento = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB026_VIN);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            vinFormaPagamento.value = [{ title: '', value: '0' }, ...fetchedData];
+            vinFormaPagamento.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedVinFormaPagamento.value) {
                 const selected = vinFormaPagamento.value.find((vinculo) => vinculo.value === internalSelectedVinFormaPagamento.value);

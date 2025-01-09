@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const estadoCivil = ref<{ title: string; value: string }[]>([]);
-const internalSelectedEstadoCivil = ref<string | null>(null);
+const estadoCivil = ref<{ title: string; value: number }[]>([]);
+const internalSelectedEstadoCivil = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um estado civil');
 
@@ -36,9 +36,9 @@ const fetchEstadoCivil = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_ECIV);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            estadoCivil.value = [{ title: '', value: '0' }, ...fetchedData];
+            estadoCivil.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedEstadoCivil.value) {
                 const selected = estadoCivil.value.find((estadoCivil) => estadoCivil.value === internalSelectedEstadoCivil.value);

@@ -39,19 +39,19 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const bancos = ref<{ title: string; value: string }[]>([]);
-const internalSelectedBanco = ref<string | null>(null);
+const bancos = ref<{ title: string; value: number }[]>([]);
+const internalSelectedBanco = ref<number | null>(null);
 const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um banco');
 
 const filteredBancos = computed(() => {
-    const bancosComItemVazio = [{ title: '', value: '0' }, ...bancos.value];
+    const bancosComItemVazio = [{ title: '', value: 0 }, ...bancos.value];
 
     if (!search.value) {
         return bancosComItemVazio;
@@ -66,7 +66,7 @@ const fetchBancos = async () => {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB006_BANCO);
 
         if (response.status === 200) {
-            bancos.value = response.data as unknown as { title: string; value: string }[];
+            bancos.value = response.data as unknown as { title: string; value: number }[];
             if (internalSelectedBanco.value) {
                 const selected = bancos.value.find((banco) => banco.value === internalSelectedBanco.value);
                 if (selected) {

@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const modRelacao = ref<{ title: string; value: string }[]>([]);
-const internalSelectedModalidade = ref<string | null>(null);
+const modRelacao = ref<{ title: string; value: number }[]>([]);
+const internalSelectedModalidade = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma modalidade');
 
@@ -36,9 +36,9 @@ const fetchModalidades = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            modRelacao.value = [{ title: '', value: '0' }, ...fetchedData];
+            modRelacao.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedModalidade.value) {
                 const selected = modRelacao.value.find((modalidade) => modalidade.value === internalSelectedModalidade.value);

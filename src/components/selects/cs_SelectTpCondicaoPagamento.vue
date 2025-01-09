@@ -22,7 +22,7 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -31,8 +31,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const tipo = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTipoCondicao = ref<string | null>(null);
+const tipo = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTipoCondicao = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
@@ -42,9 +42,9 @@ const fetchTpCondiPagamento = async () => {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB008_TIPO);
 
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipo.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipo.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTipoCondicao.value) {
                 const selected = tipo.value.find((tipo) => tipo.value === internalSelectedTipoCondicao.value);

@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const anexo = ref<{ title: string; value: string }[]>([]);
-const internalSelectedAnexos = ref<string | null>(null);
+const anexo = ref<{ title: string; value: number }[]>([]);
+const internalSelectedAnexos = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
@@ -37,9 +37,9 @@ const fetchClasse = async () => {
         //Alterar o StaticType para a tabela bb012mtd
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MTD);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            anexo.value = [{ title: '', value: '0' }, ...fetchedData];
+            anexo.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedAnexos.value) {
                 const selected = anexo.value.find((anexo) => anexo.value === internalSelectedAnexos.value);

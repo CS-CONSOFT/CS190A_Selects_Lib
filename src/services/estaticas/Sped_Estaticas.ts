@@ -2,7 +2,7 @@ import axios from 'axios';
 import { NewURLBase } from '../../services/configuracoes_axios';
 import { StaticTypeSPED } from '../../utils/enums/staticTypeSPED';
 import type { AxiosResponse } from 'axios';
-import type { EstaticasSPED } from '../../types/estaticasNovas/SPED/estaticasTypes_SPED';
+import type { EstaticasSPED } from '../../types/estaticas/SPED/estaticasTypes_SPED';
 
 async function getEstaticasSPED(staticType: StaticTypeSPED): Promise<AxiosResponse<EstaticasSPED[]>> {
     try {

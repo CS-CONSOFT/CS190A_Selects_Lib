@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const domicilio = ref<{ title: string; value: string }[]>([]);
-const internalSelectedDomicilio = ref<string | null>(null);
+const domicilio = ref<{ title: string; value: number }[]>([]);
+const internalSelectedDomicilio = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de domicílio');
 
@@ -36,9 +36,9 @@ const fetchDomicilio = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_DOM);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            domicilio.value = [{ title: '', value: '0' }, ...fetchedData];
+            domicilio.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedDomicilio.value) {
                 const selected = domicilio.value.find((domicilio) => domicilio.value === internalSelectedDomicilio.value);

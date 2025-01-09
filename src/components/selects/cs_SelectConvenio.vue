@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const convenio = ref<{ title: string; value: string }[]>([]);
-const internalSelectedConvenio = ref<string | null>(null);
+const convenio = ref<{ title: string; value: number }[]>([]);
+const internalSelectedConvenio = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione o convênio');
 
@@ -36,9 +36,9 @@ const fetchConvenio = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01201_CON);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            convenio.value = [{ title: '', value: '0' }, ...fetchedData];
+            convenio.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedConvenio.value) {
                 const selected = convenio.value.find((convenio) => convenio.value === internalSelectedConvenio.value);

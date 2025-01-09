@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const ocupacao = ref<{ title: string; value: string }[]>([]);
-const internalSelectedOcupacao = ref<string | null>(null);
+const ocupacao = ref<{ title: string; value: number }[]>([]);
+const internalSelectedOcupacao = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma ocupação');
 
@@ -36,9 +36,9 @@ const fetchOcupacao = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_OCU);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            ocupacao.value = [{ title: '', value: '0' }, ...fetchedData];
+            ocupacao.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedOcupacao.value) {
                 const selected = ocupacao.value.find((ocupacao) => ocupacao.value === internalSelectedOcupacao.value);

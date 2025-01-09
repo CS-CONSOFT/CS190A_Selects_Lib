@@ -1,4 +1,4 @@
 export type EstaticasBB = Array<{
     title: string;
-    value: string;
+    value: number;
 }>;

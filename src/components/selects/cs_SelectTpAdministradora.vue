@@ -22,13 +22,13 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoAdministradoras = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTpAdministradora = ref<string | null>(null);
+const tipoAdministradoras = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTpAdministradora = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de administradora');
 
@@ -36,9 +36,9 @@ const fetchTipoAdministradoras = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB019_TIPO);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipoAdministradoras.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipoAdministradoras.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTpAdministradora.value) {
                 const selected = tipoAdministradoras.value.find(

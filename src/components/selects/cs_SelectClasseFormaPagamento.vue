@@ -22,7 +22,7 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{
@@ -31,8 +31,8 @@ const props = defineProps<{
     rules?: Array<(v: string) => true | string>;
 }>();
 
-const classeFormaPagamento = ref<{ title: string; value: string }[]>([]);
-const internalSelectedClasseFormaPagamento = ref<string | null>(null);
+const classeFormaPagamento = ref<{ title: string; value: number }[]>([]);
+const internalSelectedClasseFormaPagamento = ref<number | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma classe para a forma de pagamento');
@@ -41,9 +41,9 @@ const fetchClasseFormaPagamento = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB026_CLASSE);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            classeFormaPagamento.value = [{ title: '', value: '0' }, ...fetchedData];
+            classeFormaPagamento.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedClasseFormaPagamento.value) {
                 const selected = classeFormaPagamento.value.find((classe) => classe.value === internalSelectedClasseFormaPagamento.value);
@@ -75,7 +75,7 @@ function validate() {
     errors.value = [];
     if (props.rules) {
         for (const rule of props.rules) {
-            const result = rule(internalSelectedClasseFormaPagamento.value || '');
+            const result = rule(String(internalSelectedClasseFormaPagamento.value || ''));
             if (result !== true) {
                 errors.value.push(result);
             }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { NewURLBase } from '../../services/configuracoes_axios';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 import type { AxiosResponse } from 'axios';
-import type { EstaticasBB } from '../../types/estaticasNovas/BB/estaticasTypes_BB';
+import type { EstaticasBB } from '../../types/estaticas/BB/estaticasTypes_BB';
 
 async function getEstaticasBB(staticType: StaticTypeBB): Promise<AxiosResponse<EstaticasBB[]>> {
     try {

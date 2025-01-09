@@ -22,13 +22,13 @@ import { getEstaticasAA } from '../../services/estaticas/aa_Estaticas';
 import { StaticTypeAA } from '../../utils/enums/staticTypeAA';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoImposto = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTpImposto = ref<string | null>(null);
+const tipoImposto = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTpImposto = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de imposto');
 
@@ -38,9 +38,9 @@ const fetchTipoImposto = async () => {
         const response = await getEstaticasAA(StaticTypeAA.CSICP_AA037_Imps);
 
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipoImposto.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipoImposto.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTpImposto.value) {
                 const selected = tipoImposto.value.find((imposto) => imposto.value === internalSelectedTpImposto.value);

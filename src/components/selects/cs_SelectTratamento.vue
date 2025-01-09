@@ -21,13 +21,13 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tratamento = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTratamento = ref<string | null>(null);
+const tratamento = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTratamento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tratamento');
 
@@ -35,9 +35,9 @@ const fetchTratamento = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB035_TRAT);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tratamento.value = [{ title: '', value: '0' }, ...fetchedData];
+            tratamento.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTratamento.value) {
                 const selected = tratamento.value.find((tratamento) => tratamento.value === internalSelectedTratamento.value);

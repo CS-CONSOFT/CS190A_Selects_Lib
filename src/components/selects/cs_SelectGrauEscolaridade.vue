@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const escolaridade = ref<{ title: string; value: string }[]>([]);
-const internalSelectedEscolaridade = ref<string | null>(null);
+const escolaridade = ref<{ title: string; value: number }[]>([]);
+const internalSelectedEscolaridade = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um grau de escolaridade');
 
@@ -36,9 +36,9 @@ const fetchEscolaridade = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_ESC);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            escolaridade.value = [{ title: '', value: '0' }, ...fetchedData];
+            escolaridade.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedEscolaridade.value) {
                 const selected = escolaridade.value.find((escolaridade) => escolaridade.value === internalSelectedEscolaridade.value);

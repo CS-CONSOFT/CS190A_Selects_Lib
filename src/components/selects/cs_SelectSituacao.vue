@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const situacao = ref<{ title: string; value: string }[]>([]);
-const internalSelectedSituacao = ref<string | null>(null);
+const situacao = ref<{ title: string; value: number }[]>([]);
+const internalSelectedSituacao = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma situação');
 
@@ -36,9 +36,9 @@ const fetchSituacao = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_SITCTA);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            situacao.value = [{ title: '', value: '0' }, ...fetchedData];
+            situacao.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedSituacao.value) {
                 const selected = situacao.value.find((situacao) => situacao.value === internalSelectedSituacao.value);

@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const sexo = ref<{ title: string; value: string }[]>([]);
-const internalSelectedSexo = ref<string | null>(null);
+const sexo = ref<{ title: string; value: number }[]>([]);
+const internalSelectedSexo = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um sexo');
 
@@ -36,9 +36,9 @@ const fetchSexo = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB01202_SEX);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            sexo.value = [{ title: '', value: '0' }, ...fetchedData];
+            sexo.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedSexo.value) {
                 const selected = sexo.value.find((sexo) => sexo.value === internalSelectedSexo.value);

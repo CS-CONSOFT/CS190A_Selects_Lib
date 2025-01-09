@@ -22,13 +22,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const classe = ref<{ title: string; value: string }[]>([]);
-const internalSelectedClasse = ref<string | null>(null);
+const classe = ref<{ title: string; value: number }[]>([]);
+const internalSelectedClasse = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma classe');
 
@@ -36,9 +36,9 @@ const fetchClasse = async () => {
     try {
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_CLACTA);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            classe.value = [{ title: '', value: '0' }, ...fetchedData];
+            classe.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedClasse.value) {
                 const selected = classe.value.find((classe) => classe.value === internalSelectedClasse.value);

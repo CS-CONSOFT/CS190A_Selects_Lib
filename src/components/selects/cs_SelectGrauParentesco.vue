@@ -21,13 +21,13 @@ import { getEstaticasBB } from '../../services/estaticas/bb_Estaticas';
 import { StaticTypeBB } from '../../utils/enums/staticTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const grauParentesco = ref<{ title: string; value: string }[]>([]);
-const internalSelectedGrau = ref<string | null>(null);
+const grauParentesco = ref<{ title: string; value: number }[]>([]);
+const internalSelectedGrau = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um grau de parentesco');
 
@@ -35,9 +35,9 @@ const fetchGrauParentesco = async () => {
     try {
         const response = await getEstaticasBB(StaticTypeBB.CSICP_BB035_GPA);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            grauParentesco.value = [{ title: '', value: '0' }, ...fetchedData];
+            grauParentesco.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedGrau.value) {
                 const selected = grauParentesco.value.find((grau) => grau.value === internalSelectedGrau.value);

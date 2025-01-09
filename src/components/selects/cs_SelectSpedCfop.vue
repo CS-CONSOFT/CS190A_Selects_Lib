@@ -39,19 +39,19 @@ import { getEstaticasSPED } from '../../services/estaticas/Sped_Estaticas';
 import { StaticTypeSPED } from '../../utils/enums/staticTypeSPED';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const cfops = ref<{ title: string; value: string }[]>([]);
-const internalSelectedCFOP = ref<string | null>(null);
+const cfops = ref<{ title: string; value: number }[]>([]);
+const internalSelectedCFOP = ref<number | null>(null);
 const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um código CFOP');
 
 const filteredCfop = computed(() => {
-    const cfopsComItemVazio = [{ title: '', value: '0' }, ...cfops.value];
+    const cfopsComItemVazio = [{ title: '', value: 0 }, ...cfops.value];
 
     if (!search.value) {
         return cfopsComItemVazio;
@@ -65,7 +65,7 @@ const fetchCfop = async () => {
     try {
         const response = await getEstaticasSPED(StaticTypeSPED.SpedInCfop);
         if (response.status === 200) {
-            cfops.value = response.data as unknown as { title: string; value: string }[];
+            cfops.value = response.data as unknown as { title: string; value: number }[];
             if (internalSelectedCFOP.value) {
                 const selected = cfops.value.find((cfop) => cfop.value === internalSelectedCFOP.value);
                 if (selected) {

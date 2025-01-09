@@ -23,13 +23,13 @@ import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: string | null): void;
+    (e: 'update:modelValue', value: number | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const tipoDocumento = ref<{ title: string; value: string }[]>([]);
-const internalSelectedTpDocumento = ref<string | null>(null);
+const tipoDocumento = ref<{ title: string; value: number }[]>([]);
+const internalSelectedTpDocumento = ref<number | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo');
 
@@ -38,9 +38,9 @@ const fetchClasse = async () => {
         //Alterar para o tipo de estatica correto bb012mdc
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MDC);
         if (response.status === 200) {
-            const fetchedData = response.data as unknown as { title: string; value: string }[];
+            const fetchedData = response.data as unknown as { title: string; value: number }[];
 
-            tipoDocumento.value = [{ title: '', value: '0' }, ...fetchedData];
+            tipoDocumento.value = [{ title: '', value: 0 }, ...fetchedData];
 
             if (internalSelectedTpDocumento.value) {
                 const selected = tipoDocumento.value.find((documento) => documento.value === internalSelectedTpDocumento.value);
