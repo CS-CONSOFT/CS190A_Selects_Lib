@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedCondicao"
-        :items="formattedCondicoes"
+        :items="condicoes"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListCondicaoPagtoCombo } from '../../services/basico/combos/bb008_comboCondicaoPagto';
-import type { Lista_bb008 } from '../../types/basico/condicao_de_pagamento/combos/Combo_CondicaoPagtoTypes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const condicoes = ref<Lista_bb008[]>([]);
+const condicoes = ref<{ title: string; value: string }[]>([]);
 const internalSelectedCondicao = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma condição');
 
-const formattedCondicoes = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...condicoes.value.map((item) => ({
-            title: item.BB008_Condicao_Pagto,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchCondicoesPagto = async () => {
     try {
-        const response = await getListCondicaoPagtoCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb008);
         if (response.status === 200) {
-            condicoes.value = response.data.Lista_bb008;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            condicoes.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedCondicao.value) {
-                const selected = condicoes.value.find((condicao) => condicao.ID === internalSelectedCondicao.value);
+                const selected = condicoes.value.find((condicao) => condicao.value === internalSelectedCondicao.value);
                 if (selected) {
-                    internalSelectedCondicao.value = selected.ID;
+                    internalSelectedCondicao.value = selected.value;
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedAgente"
-        :items="formattedAgente"
+        :items="agente"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListAgenteCobradorCombo } from '../../services/basico/combos/bb006_comboAgenteCobrador';
-import type { AgenteCobradorCombo, Lista_bb006 } from '../../services/basico/combos/bb006_comboAgenteCobrador';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,32 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const agente = ref<Lista_bb006[]>([]);
+const agente = ref<{ title: string; value: string }[]>([]);
 const internalSelectedAgente = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um agente cobrador');
 
-const formattedAgente = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...agente.value
-            .filter((item) => item.BB006_NomeReduzido)
-            .map((item) => ({
-                title: item.BB006_NomeReduzido,
-                value: item.ID
-            }))
-    ];
-});
-
 const fetchAgenteCobrador = async () => {
     try {
-        const response = await GetListAgenteCobradorCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb006);
         if (response.status === 200) {
-            agente.value = response.data.Lista_bb006;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            agente.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedAgente.value) {
-                const selected = agente.value.find((agente) => agente.ID === internalSelectedAgente.value);
+                const selected = agente.value.find((agente) => agente.value === internalSelectedAgente.value);
                 if (selected) {
-                    internalSelectedAgente.value = selected.ID;
+                    internalSelectedAgente.value = selected.value;
                 }
             }
         } else {

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedForma"
-        :items="formattedFormas"
+        :items="formas"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListFormaPagtoCombo } from '../../services/basico/combos/bb026_comboFormaPagto';
-import type { Csicp_bb026 } from '../../types/basico/forma_de_pagamento/combos/Combo_FormaPagto';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const formas = ref<Csicp_bb026[]>([]);
+const formas = ref<{ title: string; value: string }[]>([]);
 const internalSelectedForma = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma forma de pagamento');
 
-const formattedFormas = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...formas.value.map((item) => ({
-            title: item.BB026_FormaPagamento,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchFormasPagto = async () => {
     try {
-        const response = await getListFormaPagtoCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb026);
         if (response.status === 200) {
-            formas.value = response.data.Csicp_bb026;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            formas.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedForma.value) {
-                const selected = formas.value.find((condicao) => condicao.ID === internalSelectedForma.value);
+                const selected = formas.value.find((condicao) => condicao.value === internalSelectedForma.value);
                 if (selected) {
-                    internalSelectedForma.value = selected.ID;
+                    internalSelectedForma.value = selected.value;
                 }
             }
         } else {

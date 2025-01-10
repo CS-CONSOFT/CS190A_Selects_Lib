@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedAtividade"
-        :items="formattedAtividade"
+        :items="atividade"
         item-value="value"
         :rules="props.rules"
         item-text="title"
@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListAtividade } from '../../services/basico/combos/bb011_comboAtividade';
-import type { Csicp_bb011 } from '../../types/basico/atividade/bb011_atividade';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,31 +35,24 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const atividade = ref<Csicp_bb011[]>([]);
+const atividade = ref<{ title: string; value: string }[]>([]);
 const internalSelectedAtividade = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma atividade');
 
-const formattedAtividade = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...atividade.value.map((item) => ({
-            title: item.BB011_Atividade,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchAtividade = async () => {
     try {
-        const response = await getListAtividade(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb011);
         if (response.status === 200) {
-            atividade.value = response.data.csicp_bb011;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            atividade.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedAtividade.value) {
-                const selected = atividade.value.find((atividade) => atividade.ID === internalSelectedAtividade.value);
+                const selected = atividade.value.find((atividade) => atividade.value === internalSelectedAtividade.value);
                 if (selected) {
-                    internalSelectedAtividade.value = selected.ID;
+                    internalSelectedAtividade.value = selected.value;
                 }
             }
         } else {

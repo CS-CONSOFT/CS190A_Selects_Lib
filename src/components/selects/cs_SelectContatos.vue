@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedContatos"
-        :items="formattedContatos"
+        :items="contatos"
         :rules="props.rules"
         item-value="value"
         item-text="title"
@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListContatosCombo } from '../../services/contas/combos/bb035_Contatos';
-import type { Csicp_bb035 } from '../../types/crm/combos/combo_ContatosTypes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,31 +35,24 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const contatos = ref<Csicp_bb035[]>([]);
+const contatos = ref<{ title: string; value: string }[]>([]);
 const internalSelectedContatos = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Contatos');
 
-const formattedContatos = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...contatos.value.map((item) => ({
-            title: `${item.BB035_PrimeiroNome} ${item.BB035_Sobrenome}`,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchUsuarios = async () => {
     try {
-        const response = await getListContatosCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb035);
         if (response.status === 200) {
-            contatos.value = response.data.Lista_bb035_List.map((item: { csicp_bb035: any }) => item.csicp_bb035);
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            contatos.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedContatos.value) {
-                const selected = contatos.value.find((contato) => contato.Id === internalSelectedContatos.value);
+                const selected = contatos.value.find((contato) => contato.value === internalSelectedContatos.value);
                 if (selected) {
-                    internalSelectedContatos.value = selected.Id;
+                    internalSelectedContatos.value = selected.value;
                 }
             }
         } else {

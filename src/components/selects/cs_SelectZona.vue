@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedZona"
-        :items="formattedZona"
+        :items="zona"
         item-value="value"
         :rules="props.rules"
         item-text="title"
@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListZonas } from '../../services/basico/combos/bb010_comboZona';
-import type { Lista_bb010 } from '../../types/basico/zona/bb010_zona';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,31 +35,24 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const zona = ref<Lista_bb010[]>([]);
+const zona = ref<{ title: string; value: string }[]>([]);
 const internalSelectedZona = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma zona');
 
-const formattedZona = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...zona.value.map((item) => ({
-            title: item.BB010_Zona,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchZona = async () => {
     try {
-        const response = await GetListZonas(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb010);
         if (response.status === 200) {
-            zona.value = response.data.Lista_bb010;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            zona.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedZona.value) {
-                const selected = zona.value.find((zona) => zona.ID === internalSelectedZona.value);
+                const selected = zona.value.find((zona) => zona.value === internalSelectedZona.value);
                 if (selected) {
-                    internalSelectedZona.value = selected.ID;
+                    internalSelectedZona.value = selected.value;
                 }
             }
         } else {

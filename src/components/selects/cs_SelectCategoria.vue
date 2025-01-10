@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedCategoria"
-        :items="formattedCategoria"
+        :items="categoria"
         item-value="value"
         :rules="props.rules"
         item-text="title"
@@ -19,9 +19,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
-import { getCategoriasCombo } from '../../services/basico/combos/bb029_comboCategoria';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import type { Lista_bb029 } from '../../types/basico/categoria/bb029_categoria';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,31 +35,24 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const categoria = ref<Lista_bb029[]>([]);
+const categoria = ref<{ title: string; value: string }[]>([]);
 const internalSelectedCategoria = ref<string | null>(null);
 const errors = ref<string[]>([]);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma categoria');
 
-const formattedCategoria = computed(() => {
-    return [
-        { title: '', value: null },
-        ...categoria.value.map((item) => ({
-            title: item.BB029_Categoria,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchCategoria = async () => {
     try {
-        const response = await getCategoriasCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb029);
         if (response.status === 200) {
-            categoria.value = response.data.Lista_bb029;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            categoria.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedCategoria.value) {
-                const selected = categoria.value.find((categoria) => categoria.ID === internalSelectedCategoria.value);
+                const selected = categoria.value.find((categoria) => categoria.value === internalSelectedCategoria.value);
                 if (selected) {
-                    internalSelectedCategoria.value = selected.ID;
+                    internalSelectedCategoria.value = selected.value;
                 }
             }
         } else {

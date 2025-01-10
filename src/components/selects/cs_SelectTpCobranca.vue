@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedCobranca"
-        :items="formattedCobranca"
+        :items="cobranca"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListTpCobrancaCombo } from '../../services/basico/combos/bb009_comboTpCobranca';
-import type { Lista_bb009 } from '../../types/basico/tipo_de_cobranca/bb009_TpCobranca';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const cobranca = ref<Lista_bb009[]>([]);
+const cobranca = ref<{ title: string; value: string }[]>([]);
 const internalSelectedCobranca = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um tipo de cobrança');
 
-const formattedCobranca = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...cobranca.value.map((item) => ({
-            title: item.BB009_TipoCobranca,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchTpCobranca = async () => {
     try {
-        const response = await GetListTpCobrancaCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb009);
         if (response.status === 200) {
-            cobranca.value = response.data.Lista_bb009;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            cobranca.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedCobranca.value) {
-                const selected = cobranca.value.find((cobranca) => cobranca.ID === internalSelectedCobranca.value);
+                const selected = cobranca.value.find((cobranca) => cobranca.value === internalSelectedCobranca.value);
                 if (selected) {
-                    internalSelectedCobranca.value = selected.ID;
+                    internalSelectedCobranca.value = selected.value;
                 }
             }
         } else {

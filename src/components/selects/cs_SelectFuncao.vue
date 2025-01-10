@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedFuncao"
-        :items="formattedFuncao"
+        :items="funcoes"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListFuncoesCombo } from '../../services/basico/combos/bb031_comboFuncoes';
-import type { Lista_bb031 } from '../../types/basico/funcoes/bb031_funcoes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const funcoes = ref<Lista_bb031[]>([]);
+const funcoes = ref<{ title: string; value: string }[]>([]);
 const internalSelectedFuncao = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma função');
 
-const formattedFuncao = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...funcoes.value.map((item) => ({
-            title: item.csicp_bb031.BB031_Descricao,
-            value: item.csicp_bb031.ID
-        }))
-    ];
-});
-
 const fetchResponsaveis = async () => {
     try {
-        const response = await GetListFuncoesCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb031);
         if (response.status === 200) {
-            funcoes.value = response.data.Lista_bb031;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            funcoes.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedFuncao.value) {
-                const selected = funcoes.value.find((funcao) => funcao.csicp_bb031.ID === internalSelectedFuncao.value);
+                const selected = funcoes.value.find((funcao) => funcao.value === internalSelectedFuncao.value);
                 if (selected) {
-                    internalSelectedFuncao.value = selected.csicp_bb031.ID;
+                    internalSelectedFuncao.value = selected.value;
                 }
             }
         } else {

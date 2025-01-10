@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedCentroDeCusto"
-        :items="formattedCentroDeCusto"
+        :items="centros"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListCentroDeCustoCombo } from '../../services/basico/combos/bb005_comboCentroDeCusto';
-import type { Lista_bb005 } from '../../types/basico/centro_de_custo/combo/Combo_CentroDeCustoTypes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const centros = ref<Lista_bb005[]>([]);
+const centros = ref<{ title: string; value: string }[]>([]);
 const internalSelectedCentroDeCusto = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um centro de custo');
 
-const formattedCentroDeCusto = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...centros.value.map((item) => ({
-            title: item.csicp_bb005.BB005_NomeCCusto,
-            value: item.csicp_bb005.ID
-        }))
-    ];
-});
-
 const fetchCentroDeCusto = async () => {
     try {
-        const response = await GetListCentroDeCustoCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb005);
         if (response.status === 200) {
-            centros.value = response.data.Lista_bb005;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            centros.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedCentroDeCusto.value) {
-                const selected = centros.value.find((centro) => centro.csicp_bb005.ID === internalSelectedCentroDeCusto.value);
+                const selected = centros.value.find((centro) => centro.value === internalSelectedCentroDeCusto.value);
                 if (selected) {
-                    internalSelectedCentroDeCusto.value = selected.csicp_bb005.ID;
+                    internalSelectedCentroDeCusto.value = selected.value;
                 }
             }
         } else {

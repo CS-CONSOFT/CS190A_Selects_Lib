@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedNatureza"
-        :items="formattedNatureza"
+        :items="natureza"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetNaturezaCombo } from '../../services/basico/combos/bb025_comboNatureza';
-import type { Lista_bb025_Completo } from '../../types/basico/natureza/bb025_naturezaOperacao';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -30,30 +30,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const natureza = ref<Lista_bb025_Completo[]>([]);
+const natureza = ref<{ title: string; value: string }[]>([]);
 const internalSelectedNatureza = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma natureza de operação');
 
-const formattedNatureza = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...natureza.value.map((item) => ({
-            title: item.Lista_bb025.csicp_bb025.BB025_Descricao,
-            value: item.Lista_bb025.csicp_bb025.ID
-        }))
-    ];
-});
-
 const fetchNatureza = async () => {
     try {
-        const response = await GetNaturezaCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb025);
         if (response.status === 200) {
-            natureza.value = response.data.Lista_bb025_Completo;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            natureza.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedNatureza.value) {
-                const selected = natureza.value.find((natureza) => natureza.Lista_bb025.csicp_bb025.ID === internalSelectedNatureza.value);
+                const selected = natureza.value.find((natureza) => natureza.value === internalSelectedNatureza.value);
                 if (selected) {
-                    internalSelectedNatureza.value = selected.Lista_bb025.csicp_bb025.ID;
+                    internalSelectedNatureza.value = selected.value;
                 }
             }
         } else {

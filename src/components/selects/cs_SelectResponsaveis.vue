@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedResponsavel"
-        :items="formattedResponsavel"
+        :items="responsaveis"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListResponsaveisCombo } from '../../services/basico/combos/bb007_comboResponsaveis';
-import type { Lista_bb007 } from '../../types/basico/responsavel/combos/Combo_ResponsaveisTypes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const responsaveis = ref<Lista_bb007[]>([]);
+const responsaveis = ref<{ title: string; value: string }[]>([]);
 const internalSelectedResponsavel = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um responsável');
 
-const formattedResponsavel = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...responsaveis.value.map((item) => ({
-            title: item.BB007_NomeReduzido,
-            value: item.ID
-        }))
-    ];
-});
-
 const fetchResponsaveis = async () => {
     try {
-        const response = await getListResponsaveisCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb007);
         if (response.status === 200) {
-            responsaveis.value = response.data.Lista_bb007;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            responsaveis.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedResponsavel.value) {
-                const selected = responsaveis.value.find((responsavel) => responsavel.ID === internalSelectedResponsavel.value);
+                const selected = responsaveis.value.find((responsavel) => responsavel.value === internalSelectedResponsavel.value);
                 if (selected) {
-                    internalSelectedResponsavel.value = selected.ID;
+                    internalSelectedResponsavel.value = selected.value;
                 }
             }
         } else {
