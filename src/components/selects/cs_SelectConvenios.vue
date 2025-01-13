@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedConvenio"
-        :items="formattedConvenio"
+        :items="convenios"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,41 +19,34 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListConvenioCombo } from '../../services/contas/combos/bb060_ComboConvenio';
-import type { Convenio_List } from '../../types/crm/combos/combo_ConvenioTypes';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
-    (e: 'update:modelValue', value: number | null): void;
+    (e: 'update:modelValue', value: string | null): void;
 }>();
 
 const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const convenios = ref<Convenio_List[]>([]);
-const internalSelectedConvenio = ref<number | null>(null);
+const convenios = ref<{ title: string; value: string }[]>([]);
+const internalSelectedConvenio = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um convênio');
 
-const formattedConvenio = computed(() => {
-    return [
-        { title: '', value: 0 },
-        ...convenios.value.map((item) => ({
-            title: item.bb060_Descricao,
-            value: item.bb060_ConvenioId
-        }))
-    ];
-});
-
 const fetchConvenios = async () => {
     try {
-        const response = await getListConvenioCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb060);
         if (response.status === 200) {
-            convenios.value = response.data.Convenio_List;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            convenios.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedConvenio.value) {
-                const selected = convenios.value.find((convenio) => convenio.bb060_ConvenioId === internalSelectedConvenio.value);
+                const selected = convenios.value.find((convenio) => convenio.value === internalSelectedConvenio.value);
                 if (selected) {
-                    internalSelectedConvenio.value = selected.bb060_ConvenioId;
+                    internalSelectedConvenio.value = selected.value;
                 }
             }
         } else {

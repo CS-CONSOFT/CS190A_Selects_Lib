@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedVencimento"
-        :items="formattedVencimento"
+        :items="vencimentos"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListVencimentoCombo } from '../../services/basico/combos/bb037_comboVencimento';
-import type { Csicp_bb037, Lista_bb037 } from '../../types/basico/vencimento/bb037_vencimento';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -30,30 +30,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const vencimentos = ref<Lista_bb037[]>([]);
+const vencimentos = ref<{ title: string; value: string }[]>([]);
 const internalSelectedVencimento = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma data de vencimento');
 
-const formattedVencimento = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...vencimentos.value.map((item) => ({
-            title: item.csicp_bb037.bb037_Dia,
-            value: item.csicp_bb037.Id
-        }))
-    ];
-});
-
 const fetchVencimento = async () => {
     try {
-        const response = await GetListVencimentoCombo(tenant);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb037);
         if (response.status === 200) {
-            vencimentos.value = response.data.Lista_bb037;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            vencimentos.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedVencimento.value) {
-                const selected = vencimentos.value.find((vencimento) => vencimento.csicp_bb037.Id === internalSelectedVencimento.value);
+                const selected = vencimentos.value.find((vencimento) => vencimento.value === internalSelectedVencimento.value);
                 if (selected) {
-                    internalSelectedVencimento.value = selected.csicp_bb037.Id;
+                    internalSelectedVencimento.value = selected.value;
                 }
             }
         } else {
