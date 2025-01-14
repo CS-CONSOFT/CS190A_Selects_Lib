@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { URLBaseCombo } from '../../services/configuracoes_axios';
 import type { AxiosResponse } from 'axios';
-import type { ComboAA027 } from '@/types/combos/AA027_Ufs/combo_TypesAA027';
+import type { ComboAA027 } from '../../types/combos/AA027_Ufs/combo_TypesAA027';
 
 async function getComboUfs(tenant: number | undefined, paisId: string): Promise<AxiosResponse<ComboAA027[]>> {
     try {

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { URLBaseCombo } from '../../services/configuracoes_axios';
-import { ComboTypesAA } from '@/utils/enums/comboTypeAA';
+import { ComboTypesAA } from '../../utils/enums/comboTypeAA';
 import type { AxiosResponse } from 'axios';
-import type { CombosAA } from '@/types/combos/AA/combo_TypesAA';
+import type { CombosAA } from '../../types/combos/AA/combo_TypesAA';
 
 async function getCombosAA(tenant: number | undefined, comboTypes: ComboTypesAA): Promise<AxiosResponse<CombosAA[]>> {
     try {

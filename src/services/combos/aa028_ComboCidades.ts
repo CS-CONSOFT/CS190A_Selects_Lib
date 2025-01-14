@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { URLBaseCombo } from '../../services/configuracoes_axios';
 import type { AxiosResponse } from 'axios';
-import type { ComboAA028 } from '@/types/combos/AA028_Cidades/combo_TypesAA028';
+import type { ComboAA028 } from '../../types/combos/AA028_Cidades/combo_TypesAA028';
 
 async function getComboCidades(tenant: number | undefined, ufId: string, search: string): Promise<AxiosResponse<ComboAA028[]>> {
     try {
