@@ -36,8 +36,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getCombosAA } from '@/services/combos/aa_Combos';
-import { ComboTypesAA } from '@/utils/enums/comboTypeAA';
+import { getCombosAA } from '../../services/combos/aa_Combos';
+import { ComboTypesAA } from '../../utils/enums/comboTypeAA';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

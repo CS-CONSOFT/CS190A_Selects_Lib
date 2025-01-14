@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getComboCidades } from '@/services/combos/aa028_ComboCidades';
+import { getComboCidades } from '../../services/combos/aa028_ComboCidades';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

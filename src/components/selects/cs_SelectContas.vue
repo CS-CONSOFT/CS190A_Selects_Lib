@@ -49,7 +49,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
 import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
-import { getComboContas } from '@/services/combos/bb012_ComboContas';
+import { getComboContas } from '../../services/combos/bb012_ComboContas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;

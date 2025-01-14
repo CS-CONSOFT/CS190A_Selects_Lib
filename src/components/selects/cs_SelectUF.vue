@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getComboUfs } from '@/services/combos/aa027_ComboUfs';
+import { getComboUfs } from '../../services/combos/aa027_ComboUfs';
 
 const props = defineProps<{
     selectedPais: string | null;

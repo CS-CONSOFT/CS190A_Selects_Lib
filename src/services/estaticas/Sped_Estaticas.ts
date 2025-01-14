@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { NewURLBase } from '../../services/configuracoes_axios';
+import { NewURLBase } from '../configuracoes_axios';
 import { StaticTypeSPED } from '../../utils/enums/staticTypeSPED';
 import type { AxiosResponse } from 'axios';
 import type { EstaticasSPED } from '../../types/estaticas/SPED/estaticasTypes_SPED';
