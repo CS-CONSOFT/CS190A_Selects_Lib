@@ -1,17 +1,24 @@
 <template>
     <v-col v-if="loading">
         <v-progress-circular color="blue" height="10" indeterminate></v-progress-circular>
-        <span class="d-flex align-center"
-            style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
+        <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
             Procurando estabelecimentos
         </span>
     </v-col>
 
-    <v-select v-if="!loading" v-model="selectedItem" :items="formattedList" item-value="value" item-text="title"
-        variant="solo-filled" hide-details @change="emitSelection" class="custom-select">
+    <v-select
+        v-if="!loading"
+        v-model="selectedItem"
+        :items="formattedList"
+        item-value="value"
+        item-text="title"
+        variant="solo-filled"
+        hide-details
+        @change="emitSelection"
+        class="custom-select"
+    >
         <template v-slot:label>
-            <span class="d-flex align-center"
-                style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
+            <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
                 {{ props.Prm_etiqueta }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
         </template>
@@ -20,9 +27,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { URLBase } from '../../services/configuracoes_axios';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import axios from 'axios';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const props = defineProps<{
     selectedItem: string | null;
@@ -39,84 +46,43 @@ const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
 
 const selectedItem = ref<string | null>(props.modelValue);
-const formattedList = ref<{ title: string, value: string }[]>([{ title: '', value: '' }]);
+const formattedList = ref<{ title: string; value: string }[]>([]);
 const loading = ref(false);
 
-
-// Função para buscar as unidades federativas baseado no ID do país
-const fetch = async () => {
+const fetchEstabelecimentos = async () => {
     loading.value = true;
     try {
-        const header = {
-            tenant_id: tenant,
-            In_IsCount: 0,
-            In_IsActive: true,
-            in_search: "",
-            in_currentPage: 1,
-            in_pageSize: 999
-        };
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb001_razao_codg);
+        if (response.status === 200) {
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
 
-        const _response = await axios.get(`${URLBase}CSR_BB100_Tabelas_LIB/rest/CS_TabelasTotalizacao/csicp_bb001_Get_List_Estabelecimento_Simples`, { headers: header });
-        const res = _response.data as IGetListaEstabelecimento;
+            formattedList.value = [{ title: '', value: '' }, ...fetchedData];
 
-        // Mapeamento otimizado
-        formattedList.value = res.csicp_bb001.map(({ BB001_NomeFantasia, ID }) => ({
-            title: BB001_NomeFantasia,
-            value: ID
-        }));
+            if (selectedItem.value) {
+                const selected = formattedList.value.find((estab) => estab.value === selectedItem.value);
+                if (selected) {
+                    selectedItem.value = selected.value;
+                }
+            }
+        } else {
+            console.error('Erro ao buscar os estabelecimentos:', response.statusText);
+        }
     } catch (error) {
-        //@ts-ignore
-        console.error('Erro ao buscar dado:', error.response?.data || error.message);
+        console.error('Erro ao buscar os estabelecimentos:', error);
     } finally {
         loading.value = false;
     }
 };
-
 
 watch(selectedItem, (newVal) => {
     emit('update:modelValue', newVal);
 });
 
 onMounted(() => {
-    fetch();
+    fetchEstabelecimentos();
 });
 
 function emitSelection() {
     emit('update:modelValue', selectedItem.value);
 }
-
-
-
-
-
-
-
-
-
-//INTERFACE
-export interface IGetListaEstabelecimento {
-    PageSize: PageSize
-    csicp_bb001: csicp_bb001[]
-}
-
-export interface PageSize {
-    cs_list_total_itens: number
-    cs_itens_per_page: string
-    cs_number_of_pages: number
-}
-
-
-
-
-export interface csicp_bb001 {
-    ID: string
-    BB001_NomeFantasia: string
-}
-
-
-
-
-
-
-
 </script>

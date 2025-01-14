@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedRegiao"
-        :items="formattedRegioes"
+        :items="regioes"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,8 +19,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListaRegioesCombo } from '../../services/enderecamento/combos/aa026_comboRegioes';
-import type { Csicp_aa026 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
+import { getCombosAA } from '@/services/combos/aa_Combos';
+import { ComboTypesAA } from '@/utils/enums/comboTypeAA';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -30,30 +30,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const regioes = ref<Csicp_aa026[]>([]);
+const regioes = ref<{ title: string; value: string }[]>([]);
 const internalSelectedRegiao = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma região');
 
-const formattedRegioes = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...regioes.value.map((item) => ({
-            title: item.AA026_Descricao,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchRegioes = async () => {
     try {
-        const response = await getListaRegioesCombo(tenant);
+        const response = await getCombosAA(tenant, ComboTypesAA.csicp_aa026);
         if (response.status === 200) {
-            regioes.value = response.data.csicp_aa026;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            regioes.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedRegiao.value) {
-                const selected = regioes.value.find((regiao) => regiao.Id === internalSelectedRegiao.value);
+                const selected = regioes.value.find((regiao) => regiao.value === internalSelectedRegiao.value);
                 if (selected) {
-                    internalSelectedRegiao.value = selected.Id;
+                    internalSelectedRegiao.value = selected.value;
                 }
             }
         } else {

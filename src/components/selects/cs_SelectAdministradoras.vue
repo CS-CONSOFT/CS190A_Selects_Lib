@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedAdministradora"
-        :items="formattedAdministradoras"
+        :items="administradoras"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetAdministradoraCompleto } from '../../services/basico/bb019_administradora';
-import type { Lista_bb019_Completo } from '../../types/basico/administradora/bb019_administradora';
+import { getCombosBB } from '../../services/combos/bb_Combos';
+import { ComboTypesBB } from '../../utils/enums/comboTypeBB';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -29,32 +29,25 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const administradoras = ref<Lista_bb019_Completo[]>([]);
+const administradoras = ref<{ title: string; value: string }[]>([]);
 const internalSelectedAdministradora = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma administradora');
 
-const formattedAdministradoras = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...administradoras.value.map((item) => ({
-            title: item.csicp_bb019.BB019_Administradora,
-            value: item.csicp_bb019.ID
-        }))
-    ];
-});
-
 const fetchAdministradoras = async () => {
     try {
-        const response = await GetAdministradoraCompleto(tenant, true, false, '', 1, 999);
+        const response = await getCombosBB(tenant, ComboTypesBB.csicp_bb019);
         if (response.status === 200) {
-            administradoras.value = response.data.Lista_bb019_Completo;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            administradoras.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedAdministradora.value) {
                 const selected = administradoras.value.find(
-                    (administradora) => administradora.csicp_bb019.ID === internalSelectedAdministradora.value
+                    (administradora) => administradora.value === internalSelectedAdministradora.value
                 );
                 if (selected) {
-                    internalSelectedAdministradora.value = selected.csicp_bb019.ID;
+                    internalSelectedAdministradora.value = selected.value;
                 }
             }
         } else {

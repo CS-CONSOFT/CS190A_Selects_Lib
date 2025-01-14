@@ -1,17 +1,18 @@
 import axios from 'axios';
-import { NewURLBase } from '../../services/configuracoes_axios';
-import { StaticTypeAA } from '../../utils/enums/staticTypeAA';
+import { URLBaseCombo } from '../../services/configuracoes_axios';
+import { ComboTypesAA } from '@/utils/enums/comboTypeAA';
 import type { AxiosResponse } from 'axios';
-import type { EstaticasAA } from '../../types/estaticas/AA/estaticaTypes_AA';
+import type { CombosAA } from '@/types/combos/AA/combo_TypesAA';
 
-async function getEstaticasAA(staticType: StaticTypeAA): Promise<AxiosResponse<EstaticasAA[]>> {
+async function getCombosAA(tenant: number | undefined, comboTypes: ComboTypesAA): Promise<AxiosResponse<CombosAA[]>> {
     try {
-        const url = `${NewURLBase}/api/v1/combo/a?staticType=${encodeURIComponent(staticType)}`;
-        return await axios.get<EstaticasAA[]>(url);
+        const url = `${URLBaseCombo}/api/v1/combos/a?comboTypes=${encodeURIComponent(comboTypes)}`;
+        const headers = { Tenant_ID: tenant };
+        return await axios.get<CombosAA[]>(url, { headers });
     } catch (error) {
-        console.error('Erro ao obter as estáticas AA:', error);
+        console.error('Erro ao obter os combos das tabelas AA:', error);
         throw error;
     }
 }
 
-export { getEstaticasAA };
+export { getCombosAA };

@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedPais"
-        :items="formattedPaises"
+        :items="paises"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,8 +19,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListaPaisesCombo } from '../../services/enderecamento/combos/aa025_comboPaises';
-import type { Csicp_aa025 } from '../../types/enderecamento/combos/Combo_PaisesTypes';
+import { getComboPaises } from '@/services/combos/aa025_ComboPais';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -30,30 +29,23 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const paises = ref<Csicp_aa025[]>([]);
+const paises = ref<{ title: string; value: string }[]>([]);
 const internalSelectedPais = ref<string | null>(null);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um país');
 
-const formattedPaises = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...paises.value.map((item) => ({
-            title: item.AA025_Descricao,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchPaises = async () => {
     try {
-        const response = await getListaPaisesCombo(tenant);
+        const response = await getComboPaises(tenant);
         if (response.status === 200) {
-            paises.value = response.data.csicp_aa025;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            paises.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedPais.value) {
-                const selected = paises.value.find((pais) => pais.Id === internalSelectedPais.value);
+                const selected = paises.value.find((pais) => pais.value === internalSelectedPais.value);
                 if (selected) {
-                    internalSelectedPais.value = selected.Id;
+                    internalSelectedPais.value = selected.value;
                 }
             }
         } else {

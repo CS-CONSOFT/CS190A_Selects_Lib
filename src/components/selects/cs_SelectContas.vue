@@ -10,7 +10,7 @@
         hide-details
         loading-text="Carregando dados..."
         @change="emitSelection"
-        :menu-props="{ offsetY: true, width: '70%' }"
+        :menu-props="{ offsetY: true, width: '40%' }"
     >
         <template v-slot:prepend-item>
             <v-row class="sticky-search-field pa-0">
@@ -27,12 +27,15 @@
                 />
             </v-row>
         </template>
+
         <template v-slot:no-data>
             <p>Nenhum dado encontrado.</p>
         </template>
+
         <template v-slot:progress>
             <v-progress-linear v-if="loading" color="primary" height="10" indeterminate></v-progress-linear>
         </template>
+
         <template v-slot:label>
             <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
                 {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
@@ -44,10 +47,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListContasCombo } from '../../services/contas/combos/bb012_ComboContas';
 import { getEstaticasBB012 } from '../../services/estaticas/bb012_Estaticas';
 import { StaticTypesBB012 } from '../../utils/enums/staticTypesBB012';
-import type { Csicp_bb012 } from '../../types/crm/combos/combo_ContasTypes';
+import { getComboContas } from '@/services/combos/bb012_ComboContas';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -62,7 +64,7 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const contas = ref<Csicp_bb012[]>([]);
+const contas = ref<{ title: string; value: string }[]>([]);
 const selectedConta = ref<string | null>(null);
 const loading = ref(false);
 const search = ref<string>('');
@@ -71,43 +73,49 @@ const errors = ref<string[]>([]);
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma conta');
 
 const filteredContas = computed(() => {
+    const contasComItemVazio = [{ title: '', value: '' }, ...contas.value];
+
     if (!search.value) {
-        return [
-            { title: '', value: '' },
-            ...contas.value.map((item) => ({
-                title: item.BB012_Nome_Cliente,
-                value: item.ID
-            }))
-        ];
+        return contasComItemVazio;
     }
 
     const searchText = search.value.toLowerCase();
-    return contas.value
-        .filter((item) => item.BB012_Nome_Cliente.toLowerCase().includes(searchText))
-        .map((item) => ({
-            title: item.BB012_Nome_Cliente,
-            value: item.ID
-        }));
+    return contasComItemVazio.filter((item) => item.title.toLowerCase().includes(searchText));
 });
 
 const fetchContas = async () => {
     loading.value = true;
     try {
+        // Chamada à primeira API
         const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
-        const estaticasBB012 = response.data as unknown as Record<string, { Id: string }>;
+        const estaticasBB012 = response.data as unknown as { title: string; value: number }[];
 
-        let labelToSearch = props.modRelacao === 1 ? 'Cliente' : 'Fornecedor';
+        let labelToSearch: string;
+        switch (props.modRelacao) {
+            case 1:
+                labelToSearch = 'Fornecedor';
+                break;
+            case 2:
+                labelToSearch = 'Cliente/Fornecedor';
+                break;
+            case 3:
+                labelToSearch = 'Cliente';
+                break;
+            default:
+                throw new Error(`Valor inesperado para modRelacao: ${props.modRelacao}`);
+        }
 
-        const relacaoFiltrada = estaticasBB012[labelToSearch];
+        const relacaoFiltrada = estaticasBB012.find((item) => item.title === labelToSearch);
 
         if (relacaoFiltrada) {
-            const responseContas = await getListContasCombo(tenant, Number(relacaoFiltrada.Id));
+            const responseContas = await getComboContas(tenant, relacaoFiltrada.value.toString(), search.value);
             if (responseContas.status === 200) {
-                contas.value = responseContas.data.csicp_bb012;
+                contas.value = responseContas.data as unknown as { title: string; value: string }[];
+
                 if (selectedConta.value) {
-                    const selected = contas.value.find((conta) => conta.ID === selectedConta.value);
+                    const selected = contas.value.find((conta) => conta.value === selectedConta.value);
                     if (selected) {
-                        selectedConta.value = selected.ID;
+                        selectedConta.value = selected.value;
                     }
                 }
             } else {

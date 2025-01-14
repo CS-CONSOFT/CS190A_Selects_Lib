@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedUF"
-        :items="formattedUnidadesFederativas"
+        :items="unidadesFederativas"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -18,10 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import getListaUFCombo from '../../services/enderecamento/combos/aa027_comboUF';
-import type { Csicp_aa027 } from '../../types/enderecamento/combos/Combo_UnFederativaTypes';
+import { getComboUfs } from '@/services/combos/aa027_ComboUfs';
 
 const props = defineProps<{
     selectedPais: string | null;
@@ -36,31 +35,23 @@ const emit = defineEmits<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const unidadesFederativas = ref<Csicp_aa027[]>([]);
+const unidadesFederativas = ref<{ title: string; value: string }[]>([]);
 const internalSelectedUF = ref<string | null>(props.modelValue);
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma UF');
 
-const formattedUnidadesFederativas = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...unidadesFederativas.value.map((item) => ({
-            title: item.AA027_Sigla,
-            value: item.Id
-        }))
-    ];
-});
-
-// Função para buscar as unidades federativas baseado no ID do país
 const fetchUnidadesFederativas = async (paisId: string) => {
     try {
-        const response = await getListaUFCombo(tenant, paisId);
+        const response = await getComboUfs(tenant, paisId);
         if (response.status === 200) {
-            unidadesFederativas.value = response.data.Lista_csicp_aa027.map((item: { csicp_aa027: any }) => item.csicp_aa027);
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            unidadesFederativas.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (props.modelValue) {
-                const selected = unidadesFederativas.value.find((uf) => uf.Id === props.modelValue);
+                const selected = unidadesFederativas.value.find((uf) => uf.value === props.modelValue);
                 if (selected) {
-                    internalSelectedUF.value = selected.Id;
+                    internalSelectedUF.value = selected.value;
                 }
             }
         } else {
@@ -74,7 +65,7 @@ const fetchUnidadesFederativas = async (paisId: string) => {
 watch(
     () => props.selectedPais,
     (newPais) => {
-        const paisId = newPais || 'Brasil';
+        const paisId = newPais || 'a7c1b7fb-1780-4a39-b827-556c63d55856';
         fetchUnidadesFederativas(paisId);
     },
     { immediate: true }
@@ -82,11 +73,6 @@ watch(
 
 watch(internalSelectedUF, (newVal) => {
     emit('update:modelValue', newVal);
-});
-
-onMounted(() => {
-    const paisId = props.selectedPais || 'Brasil';
-    fetchUnidadesFederativas(paisId);
 });
 
 function emitSelection() {

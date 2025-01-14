@@ -1,7 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedCidade"
-        :items="formattedCidades"
+        :items="cidades"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,8 +19,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListaCidadesCombo } from '../../services/enderecamento/combos/aa028_comboCidades';
-import type { Csicp_aa028 } from '../../types/enderecamento/combos/Combo_CidadeTypes';
+import { getComboCidades } from '@/services/combos/aa028_ComboCidades';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -35,30 +34,24 @@ const props = defineProps<{
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const cidades = ref<Csicp_aa028[]>([]);
+const cidades = ref<{ title: string; value: string }[]>([]);
 const internalSelectedCidade = ref<string | null>(props.modelValue);
+const search = ref<string>('');
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma cidade');
 
-const formattedCidades = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...cidades.value.map((item) => ({
-            title: item.AA028_Cidade,
-            value: item.Id
-        }))
-    ];
-});
-
 const fetchCidades = async (ufId: string) => {
     try {
-        const response = await getListaCidadesCombo(tenant, ufId);
+        const response = await getComboCidades(tenant, ufId, search.value);
         if (response.status === 200) {
-            cidades.value = response.data.Lista_csicp_aa028.map((item: { csicp_aa028: any }) => item.csicp_aa028);
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            cidades.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (props.modelValue) {
-                const selected = cidades.value.find((cidade) => cidade.Id === props.modelValue);
+                const selected = cidades.value.find((cidade) => cidade.value === props.modelValue);
                 if (selected) {
-                    internalSelectedCidade.value = selected.Id;
+                    internalSelectedCidade.value = selected.value;
                 }
             }
         } else {

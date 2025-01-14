@@ -1,21 +1,33 @@
 <template>
     <v-select
-        v-model="internalSelected"
+        v-model="internalSelectedCnaes"
         :items="filteredItems"
         item-value="value"
         item-text="title"
         hide-details
         @change="emitSelection"
         return-object
-        :menu-props="{ offsetY: true, width: '80%' }"
+        :menu-props="{ offsetY: true, width: '40%' }"
     >
         <template v-slot:prepend-item>
-            <v-text-field v-model="search" prepend-inner-icon="mdi-magnify" label="Pesquisar" single-line hide-details clearable />
+            <v-row class="sticky-search-field pa-0">
+                <v-text-field
+                    class="pa-2"
+                    v-model="search"
+                    prepend-inner-icon="mdi-magnify"
+                    label="Pesquisar"
+                    single-line
+                    variant="solo-filled"
+                    hide-details
+                    clearable
+                    style="margin-bottom: 5px"
+                />
+            </v-row>
         </template>
 
         <template v-slot:label>
-            <span class="d-flex align-center" style="font-size: 14px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
-                {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text--red">*</span>
+            <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
+                {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
             </span>
         </template>
     </v-select>
@@ -23,75 +35,65 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { handleCnaeGetList } from '../../services/gestao/empresa/HandleCnae';
-import type { Csicp_aa029_ListItem } from '../../types/gestao/aa029_types';
+import { getUserFromLocalStorage } from '../../utils/getUserStorage';
+import { getCombosAA } from '@/services/combos/aa_Combos';
+import { ComboTypesAA } from '@/utils/enums/comboTypeAA';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
 }>();
 
-//update = se algum evento acontecer na tela, reatualizar a lista
-const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean; update: boolean }>();
+const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
-const internalSelected = ref<string>('');
+const user = getUserFromLocalStorage();
+const tenant = user?.TenantId;
+const cnaes = ref<{ title: string; value: string }[]>([]);
+const internalSelectedCnaes = ref<string | null>(null);
 const search = ref<string>('');
-
-const dataFetchedList = ref<Csicp_aa029_ListItem[]>([
-    {
-        aa029_Id: '',
-        aa029_CNAE: '',
-        aa029_Descricao: '',
-        aa029_NotaExplicativa: '',
-        aa029_IsActive: false
-    }
-]);
-
-async function fetchData() {
-    try {
-        handleCnaeGetList({ in_search: '', in_currentPage: 1, in_pageSize: 10 })
-            .then((res: { csicp_aa029_List: any }) => {
-                dataFetchedList.value = res.csicp_aa029_List;
-            })
-            .catch((err: any) => {
-                console.log(err);
-            });
-    } catch (error) {
-        console.log(error);
-    } finally {
-    }
-}
 
 const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um CNAE');
 
 const filteredItems = computed(() => {
+    const cnaesComItemVazio = [{ title: '', value: '' }, ...cnaes.value];
+
     if (!search.value) {
-        return dataFetchedList.value.map((item: { aa029_CNAE: any; aa029_Descricao: any; aa029_Id: any }) => ({
-            title: `${item.aa029_CNAE}-${item.aa029_Descricao}`,
-            value: item.aa029_Id
-        }));
+        return cnaesComItemVazio;
     }
 
     const searchText = search.value.toLowerCase();
-    return dataFetchedList.value
-        .filter(
-            (item: { aa029_Descricao: string; aa029_CNAE: string }) =>
-                item.aa029_Descricao.toLowerCase().includes(searchText) || item.aa029_CNAE.toLowerCase().includes(searchText)
-        )
-        .map((item: { aa029_CNAE: any; aa029_Descricao: any; aa029_Id: any }) => ({
-            title: `${item.aa029_CNAE} - ${item.aa029_Descricao}`,
-            value: item.aa029_Id
-        }));
+    return cnaesComItemVazio.filter((item) => item.title.toLowerCase().includes(searchText));
 });
+
+const fetchCnaes = async () => {
+    try {
+        const response = await getCombosAA(tenant, ComboTypesAA.csicp_aa029);
+
+        if (response.status === 200) {
+            cnaes.value = response.data as unknown as { title: string; value: string }[];
+
+            if (internalSelectedCnaes.value) {
+                const selected = cnaes.value.find((cnaes) => cnaes.value === internalSelectedCnaes.value);
+                if (selected) {
+                    internalSelectedCnaes.value = selected.value;
+                }
+            }
+        } else {
+            console.error('Erro ao buscar os cnaes:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar os cnaes:', error);
+    }
+};
 
 onMounted(() => {
-    fetchData();
+    fetchCnaes();
 });
 
-watch(internalSelected, (newVal) => {
+watch(internalSelectedCnaes, (newVal) => {
     emit('update:modelValue', newVal);
 });
 
 function emitSelection() {
-    emit('update:modelValue', internalSelected.value);
+    emit('update:modelValue', internalSelectedCnaes.value);
 }
 </script>
