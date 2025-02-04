@@ -58,7 +58,7 @@ const emit = defineEmits<{
 const props = defineProps<{
     Prm_etiqueta?: string;
     Prm_isObrigatorio: boolean;
-    modRelacao: number;
+    modRelacao?: number;
     rules?: Array<(v: string) => true | string>;
 }>();
 
@@ -86,43 +86,51 @@ const filteredContas = computed(() => {
 const fetchContas = async () => {
     loading.value = true;
     try {
-        // Chamada à primeira API
-        const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
-        const estaticasBB012 = response.data as unknown as { title: string; value: number }[];
+        let modalidadeId: string | undefined;
 
-        let labelToSearch: string;
-        switch (props.modRelacao) {
-            case 1:
-                labelToSearch = 'Fornecedor';
-                break;
-            case 2:
-                labelToSearch = 'Cliente/Fornecedor';
-                break;
-            case 3:
-                labelToSearch = 'Cliente';
-                break;
-            default:
-                throw new Error(`Valor inesperado para modRelacao: ${props.modRelacao}`);
+        // Se props.modRelacao for válido, buscar modalidades na primeira API
+        if (props.modRelacao) {
+            const response = await getEstaticasBB012(StaticTypesBB012.CSICP_BB012_MREL);
+            const estaticasBB012 = response.data as unknown as { title: string; value: number }[];
+
+            let labelToSearch: string;
+            switch (props.modRelacao) {
+                case 1:
+                    labelToSearch = 'Fornecedor';
+                    break;
+                case 2:
+                    labelToSearch = 'Cliente/Fornecedor';
+                    break;
+                case 3:
+                    labelToSearch = 'Cliente';
+                    break;
+                default:
+                    throw new Error(`Valor inesperado para modRelacao: ${props.modRelacao}`);
+            }
+
+            const relacaoFiltrada = estaticasBB012.find((item) => item.title === labelToSearch);
+
+            if (relacaoFiltrada) {
+                modalidadeId = relacaoFiltrada.value.toString();
+            } else {
+                console.warn('Nenhum tipo de relação encontrado para:', labelToSearch);
+            }
         }
 
-        const relacaoFiltrada = estaticasBB012.find((item) => item.title === labelToSearch);
+        // Chamar a segunda API, passando a modalidade (se for enviada via props) ou deixando vazia para listar todas as contas.
+        const responseContas = await getComboContas(tenant, modalidadeId ?? '', search.value);
 
-        if (relacaoFiltrada) {
-            const responseContas = await getComboContas(tenant, relacaoFiltrada.value.toString(), search.value);
-            if (responseContas.status === 200) {
-                contas.value = responseContas.data as unknown as { title: string; value: string }[];
+        if (responseContas.status === 200) {
+            contas.value = responseContas.data as unknown as { title: string; value: string }[];
 
-                if (selectedConta.value) {
-                    const selected = contas.value.find((conta) => conta.value === selectedConta.value);
-                    if (selected) {
-                        selectedConta.value = selected.value;
-                    }
+            if (selectedConta.value) {
+                const selected = contas.value.find((conta) => conta.value === selectedConta.value);
+                if (selected) {
+                    selectedConta.value = selected.value;
                 }
-            } else {
-                console.error('Erro ao buscar contas:', responseContas.statusText);
             }
         } else {
-            console.error('Nenhum tipo de relação encontrado para:', labelToSearch);
+            console.error('Erro ao buscar contas:', responseContas.statusText);
         }
     } catch (error) {
         console.error('Erro ao buscar estáticas ou contas:', error);
