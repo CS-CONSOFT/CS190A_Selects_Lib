@@ -1,8 +1,7 @@
 <template>
     <v-select
         v-model="internalSelectedEspecie"
-        :items="formattedEspecie"
-        :rules="props.rules"
+        :items="especies"
         item-value="value"
         item-text="title"
         variant="solo-filled"
@@ -19,58 +18,46 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { GetListEspecieCombo } from '../../services/financeiro/combos/ff003_comboEspecie';
-import type { Csicp_ff003_List } from '../../types/financeiro/especie/ff003_especie';
+import { getCombosFF } from '@/services/combos/ff_Combos';
+import { ComboTypesFF } from '@/utils/enums/comboTypeFF';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
 }>();
 
-const props = defineProps<{
-    Prm_etiqueta?: string;
-    Prm_isObrigatorio: boolean;
-    rules?: Array<(v: string) => true | string>;
-}>();
+const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>();
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const especie = ref<Csicp_ff003_List[]>([]);
+const especies = ref<{ title: string; value: string }[]>([]);
 const internalSelectedEspecie = ref<string | null>(null);
-const errors = ref<string[]>([]);
 
-const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma espécie');
+const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione uma especie');
 
-const formattedEspecie = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...especie.value.map((item: { FF003_Descricao: any; Id: any }) => ({
-            title: item.FF003_Descricao,
-            value: item.Id
-        }))
-    ];
-});
-
-const fetchTipoEspecie = async () => {
+const fetchEspecies = async () => {
     try {
-        const response = await GetListEspecieCombo(tenant);
+        const response = await getCombosFF(tenant, ComboTypesFF.csicp_ff103);
         if (response.status === 200) {
-            especie.value = response.data.csicp_ff003_List;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            especies.value = [{ title: '', value: '' }, ...fetchedData];
+
             if (internalSelectedEspecie.value) {
-                const selected = especie.value.find((especie: { Id: string | null }) => especie.Id === internalSelectedEspecie.value);
+                const selected = especies.value.find((especie) => especie.value === internalSelectedEspecie.value);
                 if (selected) {
-                    internalSelectedEspecie.value = selected.Id;
+                    internalSelectedEspecie.value = selected.value;
                 }
             }
         } else {
-            console.error('Erro ao buscar espécie:', response.statusText);
+            console.error('Erro ao buscar as especies:', response.statusText);
         }
     } catch (error) {
-        console.error('Erro ao buscar espécie:', error);
+        console.error('Erro ao buscar as especies:', error);
     }
 };
 
 onMounted(async () => {
-    await fetchTipoEspecie();
+    await fetchEspecies();
 });
 
 watch(internalSelectedEspecie, (newVal) => {
@@ -80,19 +67,4 @@ watch(internalSelectedEspecie, (newVal) => {
 function emitSelection() {
     emit('update:modelValue', internalSelectedEspecie.value);
 }
-
-function validate() {
-    errors.value = [];
-    if (props.rules) {
-        for (const rule of props.rules) {
-            const result = rule(internalSelectedEspecie.value || '');
-            if (result !== true) {
-                errors.value.push(result);
-            }
-        }
-    }
-    return errors.value.length === 0;
-}
-
-defineExpose({ validate });
 </script>

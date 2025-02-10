@@ -1,5 +1,13 @@
 <template>
-    <v-select v-model="selectedAlmox" :items="formattedAlmoxarifes" item-value="value" item-text="title" variant="solo-filled" hide-details>
+    <v-select
+        v-model="internalSelectedAlmox"
+        :items="almoxarifes"
+        item-value="value"
+        item-text="title"
+        variant="solo-filled"
+        hide-details
+        @change="emitSelection"
+    >
         <template v-slot:label>
             <span class="d-flex align-center" style="font-size: 12px; font-weight: 500; padding-bottom: 0.1em; color: #808080">
                 {{ computedLabel }}<span v-if="props.Prm_isObrigatorio" class="text-error">*</span>
@@ -8,10 +16,10 @@
     </v-select>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getListAlmoxarifesCombo } from '../../services/materiais/combos/gg001_comboAlmoxarifes';
-import type { Csicp_gg001 } from '../../types/materiais/combos/Combo_AlmoxarifeTypes';
+import { getCombosGG } from '../../services/combos/gg_Combos';
+import { ComboTypesGG } from '../../utils/enums/comboTypeGG';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
@@ -21,39 +29,42 @@ const props = defineProps<{ Prm_etiqueta?: string; Prm_isObrigatorio: boolean }>
 
 const user = getUserFromLocalStorage();
 const tenant = user?.TenantId;
-const almoxarifes = ref<Csicp_gg001[]>([]);
-const selectedAlmox = ref<string | null>(null);
+const almoxarifes = ref<{ title: string; value: string }[]>([]);
+const internalSelectedAlmox = ref<string | null>(null);
 
-const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um almoxarifado');
-
-const formattedAlmoxarifes = computed(() => {
-    return [
-        { title: '', value: '' },
-        ...almoxarifes.value.map((item) => ({
-            title: `${item.GG001_CodigoAlmox} - ${item.GG001_DescAlmox}`,
-            value: item.Id
-        }))
-    ];
-});
+const computedLabel = computed(() => props.Prm_etiqueta || 'Selecione um almoxarife');
 
 const fetchAlmoxarifes = async () => {
     try {
-        const response = await getListAlmoxarifesCombo(tenant);
+        const response = await getCombosGG(tenant, ComboTypesGG.csicp_gg001);
         if (response.status === 200) {
-            almoxarifes.value = response.data.Almoxarifados;
+            const fetchedData = response.data as unknown as { title: string; value: string }[];
+
+            almoxarifes.value = [{ title: '', value: '' }, ...fetchedData];
+
+            if (internalSelectedAlmox.value) {
+                const selected = almoxarifes.value.find((almoxarife) => almoxarife.value === internalSelectedAlmox.value);
+                if (selected) {
+                    internalSelectedAlmox.value = selected.value;
+                }
+            }
         } else {
-            console.error('Erro ao buscar almoxarifados:', response.statusText);
+            console.error('Erro ao buscar os almoxarifes:', response.statusText);
         }
     } catch (error) {
-        console.error('Erro ao carregar almoxarifados:', error);
+        console.error('Erro ao buscar os almoxarifes:', error);
     }
 };
 
-watch(selectedAlmox, (newValue) => {
-    emit('update:modelValue', newValue);
+onMounted(async () => {
+    await fetchAlmoxarifes();
 });
 
-onMounted(() => {
-    fetchAlmoxarifes();
+watch(internalSelectedAlmox, (newVal) => {
+    emit('update:modelValue', newVal);
 });
+
+function emitSelection() {
+    emit('update:modelValue', internalSelectedAlmox.value);
+}
 </script>
