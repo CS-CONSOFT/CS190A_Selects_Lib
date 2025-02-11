@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { newURLBase, serviceBs101 } from '../../services/configuracoes_axios';
-import { ComboTypesFF } from '@/utils/enums/comboTypeFF';
+import { ComboTypesFF } from '../../utils/enums/comboTypeFF';
 import type { AxiosResponse } from 'axios';
 import type { CombosFF } from '../../types/combos/FF/combo_TypesFF';
 

@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { getUserFromLocalStorage } from '../../utils/getUserStorage';
-import { getCombosFF } from '@/services/combos/ff_Combos';
-import { ComboTypesFF } from '@/utils/enums/comboTypeFF';
+import { getCombosFF } from '../../services/combos/ff_Combos';
+import { ComboTypesFF } from '../../utils/enums/comboTypeFF';
 
 const emit = defineEmits<{
     (e: 'update:modelValue', value: string | null): void;
